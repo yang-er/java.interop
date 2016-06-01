@@ -94,55 +94,51 @@ namespace Java.Interop.Tools.JavaCallableWrappersTests
 		}
 
 		[Test]
-		public void GenerateApplication (
-				[Values (null, "android.app.Application", "android.support.multidex.MultiDexApplication")] string applicationJavaClass
-		)
+		public void GenerateApplication ()
 		{
-			var actual      = Generate (typeof (ApplicationName), applicationJavaClass);
-			var expected    = $@"package application;
+			var actual      = Generate (typeof (ApplicationName));
+			var expected    = @"package application;
 
 
 public class Name
-	extends {applicationJavaClass ?? "android.app.Application"}
+	extends android.app.Application
 	implements
 		mono.android.IGCUserPeer
-{{
+{
 /** @hide */
 	public static final String __md_methods;
-	static {{
+	static {
 		__md_methods = 
 			"""";
-	}}
+	}
 
 	public Name ()
-	{{
+	{
 		mono.MonoPackageManager.setContext (this);
-	}}
+	}
 
 	private java.util.ArrayList refList;
 	public void monodroidAddReference (java.lang.Object obj)
-	{{
+	{
 		if (refList == null)
 			refList = new java.util.ArrayList ();
 		refList.add (obj);
-	}}
+	}
 
 	public void monodroidClearReferences ()
-	{{
+	{
 		if (refList != null)
 			refList.clear ();
-	}}
-}}
+	}
+}
 ";
 			Assert.AreEqual (expected, actual);
 		}
 
-		static string Generate (Type type, string applicationJavaClass = null)
+		static string Generate (Type type)
 		{
 			var td  = SupportDeclarations.GetTypeDefinition (type);
-			var g   = new JavaCallableWrapperGenerator (td, null) {
-				ApplicationJavaClass        = applicationJavaClass,
-			};
+			var g   = new JavaCallableWrapperGenerator (td, null);
 			var o   = new StringWriter ();
 			g.Generate ("__o");
 			g.Generate (o);
@@ -151,11 +147,9 @@ public class Name
 
 
 		[Test]
-		public void GenerateIndirectApplication (
-				[Values (null, "android.app.Application", "android.support.multidex.MultiDexApplication")] string applicationJavaClass
-		)
+		public void GenerateIndirectApplication ()
 		{
-			var actual      = Generate (typeof (IndirectApplication), applicationJavaClass);
+			var actual      = Generate (typeof (IndirectApplication));
 			var expected    = @"package md5fef72cac46d04ae5bdc90af5bb6221ad;
 
 
