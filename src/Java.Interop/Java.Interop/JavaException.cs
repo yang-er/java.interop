@@ -8,10 +8,9 @@ namespace Java.Interop
 		internal    const   string          JniTypeName = "java/lang/Throwable";
 		readonly    static  JniPeerMembers  _members    = new JniPeerMembers (JniTypeName, typeof (JavaException));
 
-		int     identity;
-		string  javaStackTrace;
-
-		JniManagedPeerStates     state;
+		public string                   JavaStackTrace { get; private set; }
+		public int                      JniIdentityHashCode { get; private set; }
+		public JniManagedPeerStates     JniManagedPeerState { get; private set; }
 
 #if FEATURE_JNIOBJECTREFERENCE_SAFEHANDLES
 		JniObjectReference  reference;
@@ -37,7 +36,7 @@ namespace Java.Interop
 			var peer = JniPeerMembers.InstanceMethods.StartCreateInstance ("()V", GetType (), null);
 			Construct (ref peer, JniObjectReferenceOptions.CopyAndDispose);
 			JniPeerMembers.InstanceMethods.FinishCreateInstance ("()V", this, null);
-			javaStackTrace    = _GetJavaStack (PeerReference);
+			JavaStackTrace    = GetJavaStack (PeerReference);
 		}
 
 		public unsafe JavaException (string message)
@@ -54,7 +53,7 @@ namespace Java.Interop
 			} finally {
 				JniObjectReference.Dispose (ref native_message, JniObjectReferenceOptions.CopyAndDispose);
 			}
-			javaStackTrace    = _GetJavaStack (PeerReference);
+			JavaStackTrace    = GetJavaStack (PeerReference);
 		}
 
 		public unsafe JavaException (string message, Exception innerException)
@@ -71,25 +70,25 @@ namespace Java.Interop
 			} finally {
 				JniObjectReference.Dispose (ref native_message, JniObjectReferenceOptions.CopyAndDispose);
 			}
-			javaStackTrace    = _GetJavaStack (PeerReference);
+			JavaStackTrace    = GetJavaStack (PeerReference);
 		}
 
 		public JavaException (ref JniObjectReference reference, JniObjectReferenceOptions transfer)
-			: base (_GetMessage (ref reference, transfer), _GetCause (ref reference, transfer))
+			: base (GetMessage (ref reference, transfer), GetCause (ref reference, transfer))
 		{
 			Construct (ref reference, transfer);
 			if (PeerReference.IsValid)
-				javaStackTrace    = _GetJavaStack (PeerReference);
+				JavaStackTrace    = GetJavaStack (PeerReference);
 		}
 
 		protected void Construct (ref JniObjectReference reference, JniObjectReferenceOptions options)
 		{
-			JniEnvironment.Runtime.ValueManager.Construct (this, ref reference, options);
+			JniEnvironment.Runtime.ValueManager.ConstructPeer (this, ref reference, options);
 		}
 
 		~JavaException ()
 		{
-			JniEnvironment.Runtime.ValueManager.Finalize (this);
+			JniEnvironment.Runtime.ValueManager.FinalizePeer (this);
 		}
 
 		public          JniObjectReference          PeerReference {
@@ -103,10 +102,6 @@ namespace Java.Interop
 			}
 		}
 
-		public int JniIdentityHashCode {
-			get {return identity;}
-		}
-
 		// Note: JniPeerMembers is invoked virtually from the constructor;
 		// it MUST be valid before the derived constructor executes!
 		// The pattern MUST be followed.
@@ -114,15 +109,11 @@ namespace Java.Interop
 			get {return _members;}
 		}
 
-		public string JavaStackTrace {
-			get {return javaStackTrace;}
-		}
-
 		public override string StackTrace {
 			get {
 				return base.StackTrace + Environment.NewLine +
 					"  --- End of managed " + GetType ().FullName + " stack trace ---" + Environment.NewLine +
-					javaStackTrace;
+					JavaStackTrace;
 			}
 		}
 
@@ -148,17 +139,17 @@ namespace Java.Interop
 		{
 			if (!PeerReference.IsValid)
 				throw new ObjectDisposedException (GetType ().FullName);
-			JniEnvironment.Runtime.ValueManager.Remove (this);
+			JniEnvironment.Runtime.ValueManager.RemovePeer (this);
 		}
 
 		public void Dispose ()
 		{
-			JniEnvironment.Runtime.ValueManager.Dispose (this);
+			JniEnvironment.Runtime.ValueManager.DisposePeer (this);
 		}
 
 		public void DisposeUnlessReferenced ()
 		{
-			JniEnvironment.Runtime.ValueManager.DisposeUnlessReferenced (this);
+			JniEnvironment.Runtime.ValueManager.DisposePeerUnlessReferenced (this);
 		}
 
 		protected virtual void Dispose (bool disposing)
@@ -186,7 +177,7 @@ namespace Java.Interop
 			return _members.InstanceMethods.InvokeVirtualInt32Method ("hashCode.()I", this, null);
 		}
 
-		static string _GetMessage (ref JniObjectReference reference, JniObjectReferenceOptions transfer)
+		static string GetMessage (ref JniObjectReference reference, JniObjectReferenceOptions transfer)
 		{
 			if (transfer == JniObjectReferenceOptions.None)
 				return null;
@@ -196,7 +187,7 @@ namespace Java.Interop
 			return JniEnvironment.Strings.ToString (ref s, JniObjectReferenceOptions.CopyAndDispose);
 		}
 
-		static Exception _GetCause (ref JniObjectReference reference, JniObjectReferenceOptions transfer)
+		static Exception GetCause (ref JniObjectReference reference, JniObjectReferenceOptions transfer)
 		{
 			if (transfer == JniObjectReferenceOptions.None)
 				return null;
@@ -206,7 +197,7 @@ namespace Java.Interop
 			return JniEnvironment.Runtime.GetExceptionForThrowable (ref e, JniObjectReferenceOptions.CopyAndDispose);
 		}
 
-		unsafe string _GetJavaStack (JniObjectReference handle)
+		unsafe string GetJavaStack (JniObjectReference handle)
 		{
 			using (var StringWriter_class   = new JniType ("java/io/StringWriter"))
 			using (var PrintWriter_class    = new JniType ("java/io/PrintWriter")) {
@@ -233,10 +224,6 @@ namespace Java.Interop
 			}
 		}
 
-		JniManagedPeerStates IJavaPeerable.JniManagedPeerState {
-			get {return state;}
-		}
-
 		void IJavaPeerable.Disposed ()
 		{
 			Dispose (disposing: true);
@@ -249,12 +236,12 @@ namespace Java.Interop
 
 		void IJavaPeerable.SetJniIdentityHashCode (int value)
 		{
-			identity    = value;
+			JniIdentityHashCode = value;
 		}
 
 		void IJavaPeerable.SetJniManagedPeerState (JniManagedPeerStates value)
 		{
-			state   = value;
+			JniManagedPeerState = value;
 		}
 
 		void IJavaPeerable.SetPeerReference (JniObjectReference reference)

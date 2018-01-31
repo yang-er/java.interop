@@ -32,7 +32,8 @@ namespace Java.Interop {
 			Assembly jie;
 			try {
 				jie = Assembly.Load (new AssemblyName ("Java.Interop.Export"));
-			} catch (Exception) {
+			} catch (Exception e) {
+				System.Diagnostics.Debug.WriteLine ($"Java.Interop.Export assembly was not loaded: {e}");
 				return;
 			}
 			var t   = jie.GetType ("Java.Interop.MarshalMemberBuilder");
@@ -45,6 +46,7 @@ namespace Java.Interop {
 		public abstract class JniMarshalMemberBuilder : IDisposable, ISetRuntime
 		{
 			public      JniRuntime  Runtime     {get; private set;}
+			bool                    disposed;
 
 			protected JniMarshalMemberBuilder ()
 			{
@@ -52,6 +54,9 @@ namespace Java.Interop {
 
 			public virtual void OnSetRuntime (JniRuntime runtime)
 			{
+				if (disposed)
+					throw new ObjectDisposedException (GetType ().Name);
+
 				Runtime = runtime;
 			}
 
@@ -62,6 +67,7 @@ namespace Java.Interop {
 
 			protected virtual void Dispose (bool disposing)
 			{
+				disposed = true;
 			}
 
 			public  Delegate                                                CreateMarshalToManagedDelegate (Delegate value)
@@ -87,6 +93,9 @@ namespace Java.Interop {
 
 			public string GetJniMethodSignature (MethodBase member)
 			{
+				if (disposed)
+					throw new ObjectDisposedException (GetType ().Name);
+
 				if (member == null)
 					throw new ArgumentNullException (nameof (member));
 

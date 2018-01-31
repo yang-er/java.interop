@@ -19,9 +19,15 @@ T: Java.Interop.JniObjectReference
 
 
 R: Gendarme.Rules.BadPractice.PreferSafeHandleRule
+# We don't want to use the SafeHandle here to improve the performance; see tests/invocation-overhead/README.md
+# We *can't* use SafeHandles here because the GC bridge needs to be able to write into JavaException & JavaObject.
+T: Java.Interop.JavaException
+T: Java.Interop.JavaObject
 # No, we don't want/need a SafeHandle for JniRuntime.InvocationPointer!
 T: Java.Interop.JniEnvironmentInfo
 T: Java.Interop.JniRuntime
+# We don't want/need a SafeHandle for JNIEnv::Get<PrimitiveType>ArrayElements()
+T: Java.Interop.JniArrayElements
 
 R: Gendarme.Rules.Correctness.AvoidFloatingPointEqualityRule
 # This is in from generated code. We could plausibly fix the generated code, but I'm not at all sure what to change it *to*.
@@ -52,7 +58,7 @@ M: Java.Interop.JniType Java.Interop.JniLong::get_TypeRef()
 M: Java.Interop.JniType Java.Interop.JniPeerMembers::get_JniPeerType()
 M: Java.Interop.JniRuntime Java.Interop.JniRuntime::get_CurrentRuntime()
 M: System.Void Java.Interop.JniRuntime::RaisePendingException(System.Exception)
-M: System.Void Java.Interop.JniRuntime/JniValueManager::DisposeUnlessReferenced(Java.Interop.IJavaPeerable)
+M: System.Void Java.Interop.JniRuntime/JniValueManager::DisposePeerUnlessReferenced(Java.Interop.IJavaPeerable)
 M: System.Object Java.Interop.JniRuntime/JniValueManager::PeekValue(Java.Interop.JniObjectReference)
 M: System.Object Java.Interop.JniRuntime/JniValueManager::PeekBoxedObject(Java.Interop.JniObjectReference)
 M: Java.Interop.JniType Java.Interop.JniShort::get_TypeRef()
@@ -87,13 +93,38 @@ M: System.Void Java.Interop.JniRuntime/JniObjectReferenceManager::CreatedLocalRe
 M: System.IntPtr Java.Interop.JniRuntime/JniObjectReferenceManager::ReleaseLocalReference(Java.Interop.JniObjectReference&,System.Int32&)
 
 # See 25de1f38 for rationale for `ref JniObjectReference`
+M: System.Void Java.Interop.JavaBooleanArray::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaCharArray::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaDoubleArray::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaException::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaInt16Array::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaInt32Array::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaInt64Array::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaObject::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaObjectArray`1::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaSByteArray::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JavaSingleArray::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
 M: System.String Java.Interop.JniEnvironment/Strings::ToString(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Void Java.Interop.JniObjectReference::Dispose(Java.Interop.JniObjectReference&)
+M: System.Void Java.Interop.JniObjectReference::Dispose(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
 M: System.Exception Java.Interop.JniRuntime::GetExceptionForThrowable(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
 M: System.Void Java.Interop.JniRuntime/JniObjectReferenceManager::DeleteGlobalReference(Java.Interop.JniObjectReference&)
 M: System.Void Java.Interop.JniRuntime/JniObjectReferenceManager::DeleteWeakGlobalReference(Java.Interop.JniObjectReference&)
+M: System.Void Java.Interop.JniRuntime/JniValueManager::ConstructPeer(Java.Interop.IJavaPeerable,Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: Java.Interop.IJavaPeerable Java.Interop.JniRuntime/JniValueManager::CreatePeer(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
+M: System.Object Java.Interop.JniRuntime/JniValueManager::CreateValue(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
+M: T Java.Interop.JniRuntime/JniValueManager::CreateValue(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
+M: System.Object Java.Interop.JniRuntime/JniValueManager::GetValue(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
+M: T Java.Interop.JniRuntime/JniValueManager::GetValue(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
 M: System.Void Java.Interop.JniType::.ctor(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
-M: System.Void Java.Interop.JniObjectReference::Dispose(Java.Interop.JniObjectReference&)
-M: System.Void Java.Interop.JniObjectReference::Dispose(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions)
+M: System.Object Java.Interop.JniValueMarshaler::CreateValue(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
+M: T Java.Interop.JniValueMarshaler`1::CreateGenericValue(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
+M: System.Object Java.Interop.JniValueMarshaler`1::CreateValue(Java.Interop.JniObjectReference&,Java.Interop.JniObjectReferenceOptions,System.Type)
+
+# Use of ref JniValueMarshalerState, added by design in 77a6bf86
+M: System.Void Java.Interop.JniValueMarshaler::DestroyArgumentState(System.Object,Java.Interop.JniValueMarshalerState&,System.Reflection.ParameterAttributes)
+M: System.Void Java.Interop.JniValueMarshaler`1::DestroyArgumentState(System.Object,Java.Interop.JniValueMarshalerState&,System.Reflection.ParameterAttributes)
+M: System.Void Java.Interop.JniValueMarshaler`1::DestroyGenericArgumentState(T,Java.Interop.JniValueMarshalerState&,System.Reflection.ParameterAttributes)
 
 # These are thread-safe wrappers for getting-and-updating a `static` variable.
 M: Java.Interop.JniType Java.Interop.JniType::GetCachedJniType(Java.Interop.JniType&,System.String)
@@ -129,14 +160,22 @@ T: Java.Interop.JniPeerMembers/JniStaticMethods
 T: Java.Interop.JniPeerMembers/JniInstanceFields
 T: Java.Interop.JniPeerMembers/JniStaticFields
 T: Java.Interop.JniRuntime/CreationOptions
+T: Java.Interop.JniRuntime/JniMarshalMemberBuilder
 T: Java.Interop.JniRuntime/JniObjectReferenceManager
 T: Java.Interop.JniRuntime/JniTypeManager
+T: Java.Interop.JniRuntime/JniValueManager
 
 
 R: Gendarme.Rules.Design.DisposableTypesShouldHaveFinalizerRule
 # No, not all IDisposable types should have finalizers.
 T: Java.Interop.JniArrayElements
 T: Java.Interop.JniEnvironmentInfo
+
+
+R: Gendarme.Rules.Design.UseCorrectDisposeSignaturesRule
+# we don't need virtual Dispose(bool) method here. we also fully control the type, as it has only internal constructor
+T: Java.Interop.JniArrayElements
+
 
 R: Gendarme.Rules.Design.EnumsShouldUseInt32Rule
 # It's a `uint` because I'm using bitwise operators and want to keep things sane.
@@ -197,6 +236,8 @@ R: Gendarme.Rules.Design.Generic.DoNotExposeNestedGenericSignaturesRule
 M: System.Linq.Expressions.Expression`1<System.Func`4<System.Reflection.ConstructorInfo,Java.Interop.JniObjectReference,System.Object[],System.Object>> Java.Interop.JniRuntime/JniMarshalMemberBuilder::CreateConstructActivationPeerExpression(System.Reflection.ConstructorInfo)
 
 R: Gendarme.Rules.Exceptions.DoNotSwallowErrorsCatchingNonSpecificExceptionsRule
+# the *.Export assemblies are optional, so we don't care when they cannot be loaded (they are presumably missing)
+M: System.Void Java.Interop.JniRuntime::SetMarshalMemberBuilder(Java.Interop.JniRuntime/CreationOptions)
 M: System.Reflection.Assembly Java.Interop.JniRuntime/JniTypeManager::TryLoadAssembly(System.Reflection.AssemblyName)
 # The exception is transitioned to Jni
 M:System.Void Java.Interop.ManagedPeer::Construct(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
@@ -235,6 +276,7 @@ M: Java.Interop.JniType Java.Interop.JniType::GetSuperclass()
 M: System.Boolean Java.Interop.JniType::IsAssignableFrom(Java.Interop.JniType)
 M: System.Boolean Java.Interop.JniType::IsInstanceOfType(Java.Interop.JniObjectReference)
 M: System.Void Java.Interop.JniType::RegisterNativeMethods(Java.Interop.JniNativeMethodRegistration[])
+M: System.Void Java.Interop.JniType::RegisterWithRuntime()
 M: System.Void Java.Interop.JniType::UnregisterNativeMethods()
 M: Java.Interop.JniMethodInfo Java.Interop.JniType::GetConstructor(System.String)
 M: Java.Interop.JniMethodInfo Java.Interop.JniType::GetCachedConstructor(Java.Interop.JniMethodInfo&,System.String)
@@ -249,6 +291,13 @@ M: Java.Interop.JniMethodInfo Java.Interop.JniType::GetCachedInstanceMethod(Java
 M: Java.Interop.JniMethodInfo Java.Interop.JniType::GetStaticMethod(System.String,System.String)
 M: Java.Interop.JniMethodInfo Java.Interop.JniType::GetCachedStaticMethod(Java.Interop.JniMethodInfo&,System.String,System.String)
 
+# do not check here to improve performance
+M: System.Void Java.Interop.JniArrayElements::CopyToJava()
+M: System.Int32 Java.Interop.JavaObjectArray`1::IndexOf(T)
+M: Java.Interop.JniArrayElements Java.Interop.JavaPrimitiveArray`1::GetElements()
+
+# it doesn't make sense to check the disposed state here, as the JavaObject::Dispose(bool) doesn't do anything and neither the JavaArray nor JavaObjectArray override it
+M: System.Void Java.Interop.JavaObjectArray`1::set_Item(System.Int32,T)
 
 R: Gendarme.Rules.Interoperability.MarshalBooleansInPInvokeDeclarationsRule
 # These aren't `bool`, they're `bool*`, which is a *huge* difference!
@@ -290,9 +339,20 @@ R: Gendarme.Rules.Maintainability.VariableNamesShouldNotMatchFieldNamesRule
 # > Do use the same name for constructor parameters and a property, if the
 # > constructor parameters are used to simply set the property. The only
 # > difference between such parameters and the properties should be casing.
+T: Java.Interop.JavaException
+T: Java.Interop.JniArrayElements
+T: Java.Interop.JniBooleanArrayElements
+T: Java.Interop.JniCharArrayElements
+T: Java.Interop.JniDoubleArrayElements
 T: Java.Interop.JniEnvironmentInfo
 T: Java.Interop.JniFieldInfo
+T: Java.Interop.JniInt16ArrayElements
+T: Java.Interop.JniInt32ArrayElements
+T: Java.Interop.JniInt64ArrayElements
+T: Java.Interop.JniLocationException
 T: Java.Interop.JniMethodInfo
+T: Java.Interop.JniSByteArrayElements
+T: Java.Interop.JniSingleArrayElements
 T: Java.Interop.JniType
 
 
@@ -507,11 +567,14 @@ M: Java.Interop.JniObjectReferenceType Java.Interop.NativeMethods::java_interop_
 
 
 R: Gendarme.Rules.Naming.UseCorrectSuffixRule
-T: Java.Interop.DestroyJavaVMDelegate
-T: Java.Interop.GetEnvDelegate
-T: Java.Interop.AttachCurrentThreadDelegate
-T: Java.Interop.DetachCurrentThreadDelegate
 T: Java.Interop.AttachCurrentThreadAsDaemonDelegate
+T: Java.Interop.AttachCurrentThreadDelegate
+T: Java.Interop.DestroyJavaVMDelegate
+T: Java.Interop.DetachCurrentThreadDelegate
+T: Java.Interop.Expressions.VariableCollection
+T: Java.Interop.GetEnvDelegate
+T: Java.Interop.JavaArray`1
+T: Java.Interop.JavaProxyThrowable
 T: Java.Interop.JniObjectReferenceFlags
 
 
@@ -521,6 +584,8 @@ R: Gendarme.Rules.Performance.AvoidLargeStructureRule
 T: Java.Interop.JniArgumentValue
 # This we can't make smaller; it *must* match the corresponding native struct!
 T: Java.Interop.JniNativeInterfaceStruct
+# I think we cannot make this one smaller. Also the reported size is wrong as it contains Java.Interop.JniArgumentValue, which is a union (see above)
+T: Java.Interop.JniValueMarshalerState
 
 
 R: Gendarme.Rules.Performance.AvoidRepetitiveCastsRule
@@ -539,9 +604,8 @@ M: Java.Interop.JniObjectReference Java.Interop.JniPeerMembers/JniInstanceMethod
 # I think Gendarme is buggy here; `JavaArray<T>.CheckLength(IList<T>)` *is* used.
 M: System.Int32 Java.Interop.JavaArray`1::CheckLength(System.Collections.Generic.IList`1<T>)
 
-# `__RegisterNativeMembers()` is invoked via Reflection
-M: System.Void Java.Interop.JavaProxyObject::__RegisterNativeMembers(Java.Interop.JniType,System.String)
-M: System.Void Java.Interop.JavaProxyThrowable::__RegisterNativeMembers(Java.Interop.JniType,System.String)
+# `RegisterNativeMembers()` is invoked via Reflection from JniRuntime/JniTypeManager::TryRegisterNativeMembers
+M: System.Void Java.Interop.JavaProxyObject::RegisterNativeMembers(Java.Interop.JniNativeMethodRegistrationArguments)
 
 # We need JNIEnv::FindClass() to be *bound* so that the JavaInterop_FindClass() wrapper is emitted.
 # We don't want to actually *use* it, so it's `internal` and unused. Ignore
@@ -556,8 +620,9 @@ R: Gendarme.Rules.Performance.AvoidUnusedParametersRule
 M: System.Collections.Generic.IEnumerable`1<System.Type> Java.Interop.JniRuntime/JniTypeManager::CreateGetTypesForSimpleReferenceEnumerator(System.String)
 
 R: Gendarme.Rules.Performance.UseTypeEmptyTypesRule
-# The PCL profile we're using doen't *have* Type.EmptyTypes!
+# The PCL profile we're using doesn't *have* Type.EmptyTypes!
 M: System.Void Java.Interop.JniRuntime/JniTypeManager::.cctor()
+M: System.Type[] Java.Interop.ManagedPeer::GetParameterTypes(System.String)
 
 R: Gendarme.Rules.BadPractice.CheckNewExceptionWithoutThrowingRule
 # This method constructs JavaException and calls ToString () on it. We only care about Java stack trace here, so we don't need to throw the exception to get managed StackTrace.
@@ -578,6 +643,60 @@ R: Gendarme.Rules.Design.Generic.DoNotExposeGenericListsRule
 # We don't care here as we don't hold the list and create it on request. So to avoid performace penalty, we keep the list as return type
 M: System.Collections.Generic.List`1<Java.Interop.JniSurfacedPeerInfo> Java.Interop.JniRuntime/JniValueManager::GetSurfacedPeers()
 
+R: Gendarme.Rules.Design.ListsAreStronglyTypedRule
+# Add, Insert and Remove methods are not supported by design and thus lack strongly typed versions of these methods
+T: Java.Interop.JavaBooleanArray
+T: Java.Interop.JavaCharArray
+T: Java.Interop.JavaDoubleArray
+T: Java.Interop.JavaInt16Array
+T: Java.Interop.JavaInt32Array
+T: Java.Interop.JavaInt64Array
+T: Java.Interop.JavaObjectArray`1
+T: Java.Interop.JavaSByteArray
+T: Java.Interop.JavaSingleArray
+
 R: Gendarme.Rules.Concurrency.DoNotUseLockedRegionOutsideMethodRule
 # Looks like Gendarme issue, as there are both Monitor.TryEnter and Monitor.Exit used in this method
 M: System.Boolean Java.Interop.JniRuntime/JniTypeManager::TryRegisterNativeMembers(Java.Interop.JniType,System.Type,System.String)
+
+R: Gendarme.Rules.Performance.AvoidUnsealedConcreteAttributesRule
+# We would like users to be able to derive from this attribute
+T: Java.Interop.JniValueMarshalerAttribute
+
+R: Gendarme.Rules.Design.Generic.AvoidMethodWithUnusedGenericTypeRule
+# looks like Gendarme bug, the TArray is used in the cast
+M: System.Void Java.Interop.JavaArray`1::DestroyArgumentState(System.Collections.Generic.IList`1<T>,Java.Interop.JniValueMarshalerState&,System.Reflection.ParameterAttributes)
+
+
+R: Gendarme.Rules.Performance.ImplementEqualsTypeRule
+# it doesn't make sense to implement IEquality<T> on unsealed classes
+T: Java.Interop.JavaException
+T: Java.Interop.JavaObject
+
+
+R: Gendarme.Rules.Performance.PreferLiteralOverInitOnlyFieldsRule
+# Warning is about e.g. JavaObject.InvalidJniObjectReference
+# InvalidJniObjectReference *must* be a field, not a literal, so that we can use `ref *InvalidJniObjectReference`.
+T: Java.Interop.JavaException
+T: Java.Interop.JavaObject
+
+R: Gendarme.Rules.Performance.UseStringEmptyRule
+# these are compiler generated
+M: System.String <>__AnonType0`2::ToString()
+M: System.String <>__AnonType1`2::ToString()
+
+R: Gendarme.Rules.Exceptions.DoNotThrowInUnexpectedLocationRule
+# throwing ArgumentOutOfRangeException is OK according to the documentation https://msdn.microsoft.com/library/system.collections.ilist.item(v=vs.110).aspx
+M: T Java.Interop.JavaObjectArray`1::get_Item(System.Int32)
+# we want these to check for disposed state, throwing ObjectDisposedException is better and not much different than suggested InvalidOperationException
+M: System.Boolean& Java.Interop.JniBooleanArrayElements::get_Item(System.Int32)
+M: System.SByte& Java.Interop.JniSByteArrayElements::get_Item(System.Int32)
+M: System.Char& Java.Interop.JniCharArrayElements::get_Item(System.Int32)
+M: System.Int16& Java.Interop.JniInt16ArrayElements::get_Item(System.Int32)
+M: System.Int32& Java.Interop.JniInt32ArrayElements::get_Item(System.Int32)
+M: System.Int64& Java.Interop.JniInt64ArrayElements::get_Item(System.Int32)
+M: System.Single& Java.Interop.JniSingleArrayElements::get_Item(System.Int32)
+M: System.Double& Java.Interop.JniDoubleArrayElements::get_Item(System.Int32)
+# we want to check for disposed state here
+M: System.IntPtr Java.Interop.JniArrayElements::get_Elements()
+M: System.Int32 Java.Interop.JniArrayElements::get_Size()

@@ -187,15 +187,16 @@ namespace Java.Interop.Tools.TypeNameMappings
 
 		public static string GetPackageName (Type type)
 		{
-			if (IsPackageNamePreservedForAssembly (type.Assembly.GetName ().Name))
+			string assemblyName = type.Assembly.GetName ().Name;
+			if (IsPackageNamePreservedForAssembly (assemblyName))
 				return type.Namespace.ToLowerInvariant ();
 			switch (PackageNamingPolicy) {
 			case PackageNamingPolicy.Lowercase:
 				return type.Namespace.ToLowerInvariant ();
 			case PackageNamingPolicy.LowercaseWithAssemblyName:
-				return "assembly_" + (type.Assembly.GetName ().Name.Replace ('.', '_') + "." + type.Namespace).ToLowerInvariant ();
+				return "assembly_" + (assemblyName.Replace ('.', '_') + "." + type.Namespace).ToLowerInvariant ();
 			default:
-				return "md5" + ToMd5 (type.Namespace + ":" + type.Assembly.FullName);
+				return "md5" + ToMd5 (type.Namespace + ":" + assemblyName);
 			}
 		}
 
@@ -261,8 +262,8 @@ namespace Java.Interop.Tools.TypeNameMappings
 		// Keep in sync with ToJniNameFromAttributes(TypeDefinition)
 		public static string ToJniNameFromAttributes (Type type)
 		{
-			var a = type.GetCustomAttributes ().OfType<IJniNameProviderAttribute> ().FirstOrDefault (j => !string.IsNullOrEmpty (j.Name));
-			return a == null ? null : a.Name.Replace ('.', '/');
+			var aa = (IJniNameProviderAttribute []) type.GetCustomAttributes (typeof (IJniNameProviderAttribute), inherit: false);
+			return aa.Length > 0 && !string.IsNullOrEmpty (aa [0].Name) ? aa [0].Name.Replace ('.', '/') : null;
 		}
 
 		/*
@@ -515,7 +516,7 @@ namespace Java.Interop.Tools.TypeNameMappings
 			case PackageNamingPolicy.LowercaseWithAssemblyName:
 				return "assembly_" + (type.Module.Assembly.Name.Name.Replace ('.', '_') + "." + type.Namespace).ToLowerInvariant ();
 			default:
-				return "md5" + ToMd5 (type.Namespace + ":" + type.Module.Assembly.Name.FullName);
+				return "md5" + ToMd5 (type.Namespace + ":" + type.Module.Assembly.Name.Name);
 			}
 		}
 #endif

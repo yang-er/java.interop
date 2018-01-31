@@ -7,9 +7,8 @@ namespace Java.Interop
 	{
 		readonly static JniPeerMembers _members = new JniPeerMembers ("java/lang/Object", typeof (JavaObject));
 
-		int     keyHandle;
-
-		JniManagedPeerStates     state;
+		public int                  JniIdentityHashCode { get; private set; }
+		public JniManagedPeerStates JniManagedPeerState { get; private set; }
 
 #if FEATURE_JNIOBJECTREFERENCE_SAFEHANDLES
 		JniObjectReference  reference;
@@ -28,7 +27,7 @@ namespace Java.Interop
 
 		~JavaObject ()
 		{
-			JniEnvironment.Runtime.ValueManager.Finalize (this);
+			JniEnvironment.Runtime.ValueManager.FinalizePeer (this);
 		}
 
 		public          JniObjectReference          PeerReference {
@@ -40,14 +39,6 @@ namespace Java.Interop
 				return new JniObjectReference (handle, handle_type);
 #endif  // FEATURE_JNIOBJECTREFERENCE_INTPTRS
 			}
-		}
-
-		public int JniIdentityHashCode {
-			get {return keyHandle;}
-		}
-
-		public JniManagedPeerStates JniManagedPeerState {
-			get {return state;}
 		}
 
 		// Note: JniPeerMembers is invoked virtually from the constructor;
@@ -75,7 +66,7 @@ namespace Java.Interop
 
 		protected void Construct (ref JniObjectReference reference, JniObjectReferenceOptions options)
 		{
-			JniEnvironment.Runtime.ValueManager.Construct (this, ref reference, options);
+			JniEnvironment.Runtime.ValueManager.ConstructPeer (this, ref reference, options);
 		}
 
 		protected void SetPeerReference (ref JniObjectReference reference, JniObjectReferenceOptions options)
@@ -100,17 +91,17 @@ namespace Java.Interop
 		{
 			if (!PeerReference.IsValid)
 				throw new ObjectDisposedException (GetType ().FullName);
-			JniEnvironment.Runtime.ValueManager.Remove (this);
+			JniEnvironment.Runtime.ValueManager.RemovePeer (this);
 		}
 
 		public void Dispose ()
 		{
-			JniEnvironment.Runtime.ValueManager.Dispose (this);
+			JniEnvironment.Runtime.ValueManager.DisposePeer (this);
 		}
 
 		public void DisposeUnlessReferenced ()
 		{
-			JniEnvironment.Runtime.ValueManager.DisposeUnlessReferenced (this);
+			JniEnvironment.Runtime.ValueManager.DisposePeerUnlessReferenced (this);
 		}
 
 		protected virtual void Dispose (bool disposing)
@@ -143,10 +134,6 @@ namespace Java.Interop
 			return JniEnvironment.Strings.ToString (ref lref, JniObjectReferenceOptions.CopyAndDispose);
 		}
 
-		JniManagedPeerStates IJavaPeerable.JniManagedPeerState {
-			get {return state;}
-		}
-
 		void IJavaPeerable.Disposed ()
 		{
 			Dispose (disposing: true);
@@ -159,12 +146,12 @@ namespace Java.Interop
 
 		void IJavaPeerable.SetJniIdentityHashCode (int value)
 		{
-			keyHandle   = value;
+			JniIdentityHashCode = value;
 		}
 
 		void IJavaPeerable.SetJniManagedPeerState (JniManagedPeerStates value)
 		{
-			state   = value;
+			JniManagedPeerState = value;
 		}
 
 		void IJavaPeerable.SetPeerReference (JniObjectReference reference)
