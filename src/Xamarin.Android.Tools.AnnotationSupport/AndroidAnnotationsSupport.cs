@@ -23,8 +23,14 @@ namespace Xamarin.AndroidTools.AnnotationSupport
 
 		static IEnumerable<AnnotatedItem> ParseArchiveEntry (ZipArchiveEntry entry)
 		{
-			using (var s = entry.Open ())
-				return XDocument.Load (s).Root.Elements ("item").Select (e => new AnnotatedItem (e));
+			using (var s = entry.Open ()) {
+				try {
+					return XDocument.Load (s).Root.Elements ("item").Select (e => new AnnotatedItem (e));
+				} catch (System.Xml.XmlException) {
+					Console.WriteLine ($"Encountered invalid XML loading {entry.FullName}");
+					return new List<AnnotatedItem>();
+				}
+			}
 		}
 
 		#endregion
