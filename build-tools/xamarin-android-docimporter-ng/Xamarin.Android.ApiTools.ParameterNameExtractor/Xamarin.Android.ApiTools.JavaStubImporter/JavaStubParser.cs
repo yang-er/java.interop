@@ -106,6 +106,7 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			KeyTerm keyword_synchronized = Keyword ("synchronized");
 			KeyTerm keyword_default = Keyword ("default");
 			KeyTerm keyword_native = Keyword ("native");
+			KeyTerm keyword_strictfp = Keyword ("strictfp");
 			KeyTerm keyword_volatile = Keyword ("volatile");
 			KeyTerm keyword_transient = Keyword ("transient");
 			KeyTerm keyword_enum = Keyword ("enum");
@@ -143,6 +144,7 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			var type_member = DefaultNonTerminal ("type_member");
 			var nested_type_decl = DefaultNonTerminal ("nested_type_decl");
 			var ctor_decl = DefaultNonTerminal ("ctor_decl");
+			var initializer_decl = DefaultNonTerminal ("initializer_decl");
 			var method_decl = DefaultNonTerminal ("method_decl");
 			var field_decl = DefaultNonTerminal ("field_decl");
 			var opt_field_assignment = DefaultNonTerminal ("opt_field_assignment");
@@ -196,6 +198,7 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			var default_value_expr = DefaultNonTerminal ("default_value_expr");
 			var default_value_null_casted = DefaultNonTerminal ("default_value_null_casted");
 			var default_value_literal = DefaultNonTerminal ("default_value_literal");
+			var default_value_literal_casted = DefaultNonTerminal ("default_value_literal_casted");
 			var runtime_exception = DefaultNonTerminal ("runtime_exception");
 			var numeric_terminal = TerminalFactory.CreateCSharpNumber ("numeric_value_literal");
 			numeric_terminal.AddPrefix ("-", NumberOptions.AllowSign);
@@ -212,7 +215,7 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			opt_package_decl.Rule = package_decl | Empty;
 			package_decl.Rule = keyword_package + dotted_identifier + ";";
 			imports.Rule = MakeStarRule (imports, import);
-			import.Rule = keyword_import + dotted_identifier + ";";
+			import.Rule = keyword_import + dotted_identifier + ";" | keyword_import + keyword_static + dotted_identifier + ";";
 			type_decls.Rule = MakeStarRule (type_decls, type_decl);
 
 			type_decl.Rule = class_decl | interface_decl | enum_decl;
@@ -230,7 +233,7 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			type_body.Rule = T ("{") + type_members + T ("}");
 			annotations.Rule = MakeStarRule (annotations, annotation);
 			annotation.Rule = T ("@") + dotted_identifier + opt_annotation_args;
-			opt_annotation_args.Rule = Empty | T ("(") + annotation_value_assignments + T (")");
+			opt_annotation_args.Rule = Empty | T ("(") + annotation_value_assignments + T (")") | T ("(") + array_literal + T (")") | T ("(") + rvalue_expression + T (")");
 			annotation_value_assignments.Rule = MakeStarRule (annotation_value_assignments, ToTerm (","), annot_assign_expr);
 			annot_assign_expr.Rule = assign_expr;// | identifier + "=" + "{" + inner_annotations + "}";
 			inner_annotations.Rule = MakeStarRule (inner_annotations, ToTerm (","), annotations);
@@ -240,21 +243,21 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			modifiers_then_opt_generic_arg.Rule = MakeStarRule (modifiers_then_opt_generic_arg, modifier_or_generic_arg);
 			modifiers.Rule = MakeStarRule (modifiers, modifier);
 			modifier_or_generic_arg.Rule = modifier | generic_definition_arguments_spec;
-			modifier.Rule = keyword_public | keyword_protected | keyword_final | keyword_abstract | keyword_synchronized | keyword_default | keyword_native | keyword_volatile | keyword_transient | keyword_static;
-
+			modifier.Rule = keyword_public | keyword_protected | keyword_final | keyword_abstract | keyword_synchronized | keyword_default | keyword_native | keyword_volatile | keyword_transient | keyword_static | keyword_strictfp;
 			type_members.Rule = MakeStarRule (type_members, type_member);
-			type_member.Rule = nested_type_decl | ctor_decl | method_decl | field_decl | static_ctor_decl;
+			type_member.Rule = nested_type_decl | ctor_decl | method_decl | field_decl | static_ctor_decl | initializer_decl;
 			nested_type_decl.Rule = type_decl;
 			enum_members_decl.Rule = enum_member_initializers + ";";
 			enum_member_initializers.Rule = MakeStarRule (enum_member_initializers, ToTerm (","), enum_member_initializer);
-			enum_member_initializer.Rule = annotations + identifier + "(" + ")";
+			enum_member_initializer.Rule = annotations + identifier | annotations + identifier + "(" + ")";
 			static_ctor_decl.Rule = annotations + keyword_static + "{" + assignments + "}";
+			initializer_decl.Rule = ("{" + assignments + "}");
 			assignments.Rule = MakeStarRule (assignments, assignment);
 			assignment.Rule = assign_expr + ";";
 			assign_expr.Rule = identifier + "=" + rvalue_expression;
 			rvalue_expressions.Rule = MakeStarRule (rvalue_expressions, ToTerm (","), rvalue_expression);
 			rvalue_expression.Rule = value_literal | type_name | identifier | array_literal | annotation;
-			array_literal.Rule = "{" + rvalue_expressions + "}";
+			array_literal.Rule = "{" + rvalue_expressions + "}" | keyword_new + type_name + "[0]";
 
 			field_decl.Rule = annotations + modifiers_then_opt_generic_arg + type_name + identifier + opt_field_assignment + ";";
 			opt_field_assignment.Rule = Empty | "=" + rvalue_expression;
@@ -268,8 +271,9 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			impl_expression.Rule = call_super | runtime_exception;
 			call_super.Rule = keyword_super + "(" + super_args + ")" + ";";
 			super_args.Rule = MakeStarRule (super_args, ToTerm (","), default_value_expr);
-			default_value_expr.Rule = keyword_null | default_value_null_casted | default_value_literal;
+			default_value_expr.Rule = keyword_null | default_value_null_casted | default_value_literal | default_value_literal_casted;
 			default_value_null_casted.Rule = "(" + type_name + ")" + keyword_null;
+			default_value_literal_casted.Rule = "(" + type_name + ")" + default_value_literal;
 			default_value_literal.Rule = numeric_terminal | "\"\"" | "{" + "}" | keyword_true | keyword_false;
 			runtime_exception.Rule = keyword_throw + keyword_new + identifier + "(\"Stub!\"" + ")" + ";";
 
@@ -472,6 +476,7 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			};
 			opt_field_assignment.AstConfig.NodeCreator = (ctx, node) => node.AstNode = node.ChildNodes.Count > 0 ? node.ChildNodes [1].AstNode : null;
 			static_ctor_decl.AstConfig.NodeCreator = DoNothing; // static constructors are ignorable.
+			initializer_decl.AstConfig.NodeCreator = DoNothing;
 			enum_body.AstConfig.NodeCreator = (ctx, node) => {
 				ProcessChildren (ctx, node);
 				var ml = new List<JavaMember> ();
@@ -579,6 +584,7 @@ namespace Xamarin.Android.ApiTools.JavaStubImporter
 			default_value_expr.AstConfig.NodeCreator = CreateStringFlattener ();
 			default_value_null_casted.AstConfig.NodeCreator = CreateStringFlattener ();
 			default_value_literal.AstConfig.NodeCreator = CreateStringFlattener ();
+			default_value_literal_casted.AstConfig.NodeCreator = CreateStringFlattener ();
 			runtime_exception.AstConfig.NodeCreator = CreateStringFlattener ();
 			Func<string, string, string> stripTail = (s, t) => s.EndsWith (t, StringComparison.Ordinal) ? s.Substring (0, s.Length - t.Length) : s;
 			numeric_terminal.AstConfig.NodeCreator = (ctx, node) => node.AstNode = stripTail (stripTail (node.Token.Text, "L"), "f");
