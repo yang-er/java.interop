@@ -5,10 +5,10 @@
   </PropertyGroup>
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
   <Target Name="BuildJni_c"
-      Inputs="$(JNIEnvGenPath)\jnienv-gen.exe"
+      Inputs="$(JNIEnvGenPath)jnienv-gen.exe"
       Outputs="jni.c">
     <MakeDir Directories="$(OutputPath)" />
-    <Exec Command="$(Runtime) &quot;$(JNIEnvGenPath)\jnienv-gen.exe&quot; jni.g.cs jni.c" />
+    <Exec Command="$(Runtime) &quot;$(JNIEnvGenPath)jnienv-gen.exe&quot; jni.g.cs jni.c" />
   </Target>
   <PropertyGroup>
     <_MacLib>$(OutputPath)\lib$(OutputName).dylib</_MacLib>
