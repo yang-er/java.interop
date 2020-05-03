@@ -63,7 +63,7 @@ namespace MonoDroid.Generation {
 
 		public string ToNative (CodeGenerationOptions opt, string var_name, Dictionary<string, string> mappings = null)
 		{
-			return String.Format ("JNIEnv.NewString ({0})", var_name);
+			return String.Format ("JniEnvironment.Strings.NewString ({0})", var_name);
 		}
 
 		public bool Validate (CodeGenerationOptions opt, GenericParameterDefinitionList type_params, CodeGeneratorContext context)
@@ -84,7 +84,7 @@ namespace MonoDroid.Generation {
 		public string[] PostCall (CodeGenerationOptions opt, string var_name)
 		{
 			return new string[]{
-				string.Format ("JNIEnv.DeleteLocalRef ({0});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name))),
+				string.Format ("JniObjectReference.Dispose (ref {0}, JniObjectReferenceOptions.CopyAndDispose);", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name))),
 			};
 		}
 
@@ -95,7 +95,7 @@ namespace MonoDroid.Generation {
 
 		public string[] PreCall (CodeGenerationOptions opt, string var_name)
 		{
-			return new string[] { String.Format ("IntPtr {0} = JNIEnv.NewString ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
+			return new string[] { String.Format ("JniObjectReference {0} = JniEnvironment.Strings.NewString ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
 		}
 
 		public bool NeedsPrep { get { return true; } }

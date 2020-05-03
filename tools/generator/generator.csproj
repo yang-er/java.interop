@@ -11,6 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Java.Interop.Tools.Generator.CodeGeneration\XAJavaInteropCodeGenerator.cs" />
+    <Compile Remove="Java.Interop.Tools.Generator.CodeGeneration\XamarinAndroidCodeGenerator.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="generator.slnf" />
   </ItemGroup>
 

@@ -22,7 +22,7 @@ namespace MonoDroid.Generation
 			opt = options;
 		}
 
-		internal virtual string GetAllInterfaceImplements () => "IJavaObject";
+		internal virtual string GetAllInterfaceImplements () => "";
 
 		internal abstract void WriteClassHandle (ClassGen type, string indent, bool requireNew);
 

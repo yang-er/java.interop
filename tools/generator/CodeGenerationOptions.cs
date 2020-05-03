@@ -32,6 +32,8 @@ namespace MonoDroid.Generation
 
 		internal CodeGenerator CreateCodeGenerator (TextWriter writer)
 		{
+			return new JavaInteropCodeGenerator(writer, this);
+			/*
 			switch (codeGenerationTarget) {
 				case CodeGenerationTarget.JavaInterop1:
 					return new JavaInteropCodeGenerator (writer, this);
@@ -41,6 +43,7 @@ namespace MonoDroid.Generation
 				default:
 					return new XamarinAndroidCodeGenerator (writer, this);
 			}
+			*/
 		}
 
 		public      SymbolTable             SymbolTable             { get; } = new SymbolTable ();
