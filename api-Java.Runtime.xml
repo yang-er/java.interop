@@ -541,196 +541,62 @@
           type="java.lang.String"
           jni-type="Ljava/lang/String;" />
       </constructor>
-      <constructor
+      <method
+        abstract="false"
         deprecated="not deprecated"
         final="false"
-        name="String"
+        name="charAt"
+        native="false"
+        return="char"
+        jni-return="C"
         static="false"
+        synchronized="false"
         visibility="public"
         bridge="false"
         synthetic="false"
-        jni-signature="([B)V">
+        jni-signature="(I)C">
         <parameter
           name="p0"
-          type="byte[]"
-          jni-type="[B" />
-      </constructor>
-      <constructor
-        deprecated="deprecated"
+          type="int"
+          jni-type="I" />
+      </method>
+      <method
+        abstract="false"
+        deprecated="not deprecated"
         final="false"
-        name="String"
+        name="subSequence"
+        native="false"
+        return="java.lang.CharSequence"
+        jni-return="Ljava/lang/CharSequence;"
         static="false"
+        synchronized="false"
         visibility="public"
         bridge="false"
         synthetic="false"
-        jni-signature="([BI)V">
+        jni-signature="(II)Ljava/lang/CharSequence;">
         <parameter
           name="p0"
-          type="byte[]"
-          jni-type="[B" />
+          type="int"
+          jni-type="I" />
         <parameter
           name="p1"
           type="int"
           jni-type="I" />
-      </constructor>
-      <constructor
+      </method>
+      <method
+        abstract="false"
         deprecated="not deprecated"
         final="false"
-        name="String"
+        name="length"
+        native="false"
+        return="int"
+        jni-return="I"
         static="false"
+        synchronized="false"
         visibility="public"
         bridge="false"
         synthetic="false"
-        jni-signature="([BII)V">
-        <parameter
-          name="p0"
-          type="byte[]"
-          jni-type="[B" />
-        <parameter
-          name="p1"
-          type="int"
-          jni-type="I" />
-        <parameter
-          name="p2"
-          type="int"
-          jni-type="I" />
-      </constructor>
-      <constructor
-        deprecated="deprecated"
-        final="false"
-        name="String"
-        static="false"
-        visibility="public"
-        bridge="false"
-        synthetic="false"
-        jni-signature="([BIII)V">
-        <parameter
-          name="p0"
-          type="byte[]"
-          jni-type="[B" />
-        <parameter
-          name="p1"
-          type="int"
-          jni-type="I" />
-        <parameter
-          name="p2"
-          type="int"
-          jni-type="I" />
-        <parameter
-          name="p3"
-          type="int"
-          jni-type="I" />
-      </constructor>
-      <constructor
-        deprecated="not deprecated"
-        final="false"
-        name="String"
-        static="false"
-        visibility="public"
-        bridge="false"
-        synthetic="false"
-        jni-signature="([BIILjava/lang/String;)V">
-        <parameter
-          name="p0"
-          type="byte[]"
-          jni-type="[B" />
-        <parameter
-          name="p1"
-          type="int"
-          jni-type="I" />
-        <parameter
-          name="p2"
-          type="int"
-          jni-type="I" />
-        <parameter
-          name="p3"
-          type="java.lang.String"
-          jni-type="Ljava/lang/String;" />
-        <exception
-          name="java/io/UnsupportedEncodingException"
-          type="java.io.UnsupportedEncodingException"
-          type-generic-aware="java.io.UnsupportedEncodingException" />
-      </constructor>
-      <constructor
-        deprecated="not deprecated"
-        final="false"
-        name="String"
-        static="false"
-        visibility="public"
-        bridge="false"
-        synthetic="false"
-        jni-signature="([BLjava/lang/String;)V">
-        <parameter
-          name="p0"
-          type="byte[]"
-          jni-type="[B" />
-        <parameter
-          name="p1"
-          type="java.lang.String"
-          jni-type="Ljava/lang/String;" />
-        <exception
-          name="java/io/UnsupportedEncodingException"
-          type="java.io.UnsupportedEncodingException"
-          type-generic-aware="java.io.UnsupportedEncodingException" />
-      </constructor>
-      <constructor
-        deprecated="not deprecated"
-        final="false"
-        name="String"
-        static="false"
-        visibility="public"
-        bridge="false"
-        synthetic="false"
-        jni-signature="([C)V">
-        <parameter
-          name="p0"
-          type="char[]"
-          jni-type="[C" />
-      </constructor>
-      <constructor
-        deprecated="not deprecated"
-        final="false"
-        name="String"
-        static="false"
-        visibility="public"
-        bridge="false"
-        synthetic="false"
-        jni-signature="([CII)V">
-        <parameter
-          name="p0"
-          type="char[]"
-          jni-type="[C" />
-        <parameter
-          name="p1"
-          type="int"
-          jni-type="I" />
-        <parameter
-          name="p2"
-          type="int"
-          jni-type="I" />
-      </constructor>
-      <constructor
-        deprecated="not deprecated"
-        final="false"
-        name="String"
-        static="false"
-        visibility="public"
-        bridge="false"
-        synthetic="false"
-        jni-signature="([III)V">
-        <parameter
-          name="p0"
-          type="int[]"
-          jni-type="[I" />
-        <parameter
-          name="p1"
-          type="int"
-          jni-type="I" />
-        <parameter
-          name="p2"
-          type="int"
-          jni-type="I" />
-      </constructor>
+        jni-signature="()I" />
       <method
         abstract="false"
         deprecated="not deprecated"

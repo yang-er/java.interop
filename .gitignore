@@ -18,3 +18,6 @@ Resource.designer.cs
 *.rej
 *.orig
 *~
+/samples/Java.Runtime/Java.Runtime
+/api-Java.Runtime.xml.adjusted.fixed
+/api-Java.Runtime.xml.adjusted

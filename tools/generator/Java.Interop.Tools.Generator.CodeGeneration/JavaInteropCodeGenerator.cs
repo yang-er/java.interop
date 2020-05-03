@@ -10,23 +10,6 @@ namespace MonoDroid.Generation {
 		{
 		}
 
-		static string GetInvokeType (string type)
-		{
-			switch (type) {
-			case "Bool":            return "Boolean";
-			case "Byte":            return "SByte";
-			case "Int":             return "Int32";
-			case "Short":           return "Int16";
-			case "Long":            return "Int64";
-			case "Float":           return "Single";
-			case "UInt":            return "Int32";
-			case "UShort":          return "Int16";
-			case "ULong":           return "Int64";
-			case "UByte":           return "SByte";
-			default:                return type;
-			}
-		}
-
 		internal override string GetAllInterfaceImplements () => "IJavaPeerable";
 
 		protected virtual string GetPeerMembersType () => "JniPeerMembers";
@@ -66,9 +49,9 @@ namespace MonoDroid.Generation {
 			WritePeerMembers (indent, type.RawJniName, declaringType, false);
 
 			writer.WriteLine ();
-			writer.WriteLine ("{0}static IntPtr java_class_ref => _members.JniPeerType.PeerReference.Handle;", indent);
+			writer.WriteLine ("{0}static JniObjectReference java_class_ref => _members.JniPeerType.PeerReference;", indent);
 			writer.WriteLine ("{0}public override global::Java.Interop.JniPeerMembers JniPeerMembers => _members;", indent);
-			writer.WriteLine ("{0}protected override IntPtr ThresholdClass => class_ref;", indent);
+			writer.WriteLine ("{0}protected override IntPtr ThresholdClass => class_ref.Handle;", indent);
 			writer.WriteLine ("{0}protected override global::System.Type ThresholdType => _members.ManagedPeerType;", indent);
 			writer.WriteLine ();
 		}
@@ -147,7 +130,7 @@ namespace MonoDroid.Generation {
 			}
 
 			if (!method.IsVoid) {
-				var r   = invokeType == "Object" ? "__rm.Handle" : "__rm";
+				var r   = invokeType == "Object" ? "__rm" : "__rm";
 				writer.WriteLine ("{0}return {2}{1};", indent, method.RetVal.FromNative (opt, r, true) + opt.GetNullForgiveness (method.RetVal), method.RetVal.ReturnCast);
 			}
 

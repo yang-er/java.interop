@@ -78,12 +78,12 @@ namespace MonoDroid.Generation {
 
 		public string FromNative (CodeGenerationOptions opt, string var_name, bool owned)
 		{
-			return String.Format ("({0}[]{4}) JNIEnv.GetArray ({1}, {2}, typeof ({3}))", opt.GetOutputName (ElementType), var_name, owned ? "JniHandleOwnership.TransferLocalRef" : "JniHandleOwnership.DoNotTransfer", opt.GetOutputName (sym.FullName), opt.NullableOperator);
+			return String.Format ("({0}[]{4}) global::Java.Lang.Object.GetArray<{3}> (ref {1}, {2})", opt.GetOutputName (ElementType), var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None", opt.GetOutputName (sym.FullName), opt.NullableOperator);
 		}
 
 		public string ToNative (CodeGenerationOptions opt, string var_name, Dictionary<string, string> mappings = null)
 		{
-			return String.Format ("JNIEnv.NewArray ({0})", var_name);
+			return String.Format ("global::Java.Lang.Object.NewArray ({0}).PeerReference.NewLocalRef().Handle", var_name);
 		}
 
 		public bool Validate (CodeGenerationOptions opt, GenericParameterDefinitionList type_params, CodeGeneratorContext context)
@@ -100,29 +100,27 @@ namespace MonoDroid.Generation {
 		{
 			string[] result = new string [2];
 			result [0] = String.Format ("if ({0} != null)", opt.GetSafeIdentifier (var_name));
-			result [1] = String.Format ("\tJNIEnv.CopyArray ({0}, {1});", opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)));
+			result [1] = String.Format ("\tglobal::Java.Lang.Object.ArrayCopyNative({0}, {1});", opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)));
 			return result;
 		}
 
 		public string[] PostCall (CodeGenerationOptions opt, string var_name)
 		{
 			string native_name = opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name));
-			string[] result = new string [4];
-			result [0] = String.Format ("if ({0} != null) {{", opt.GetSafeIdentifier (var_name));
-			result [1] = String.Format ("\tJNIEnv.CopyArray ({0}, {1});", native_name, opt.GetSafeIdentifier (var_name));
-			result [2] = String.Format ("\tJNIEnv.DeleteLocalRef ({0});", native_name);
-			result [3] = "}";
+			string[] result = new string [2];
+			result [0] = String.Format ("if ({0} != null)", opt.GetSafeIdentifier (var_name));
+			result [1] = String.Format ("\t{0}.CopyTo({1}, 0);", native_name, opt.GetSafeIdentifier (var_name));
 			return result;
 		}
 
 		public string[] PreCallback (CodeGenerationOptions opt, string var_name, bool owned)
 		{
-			return new string[] { String.Format ("var {1} = ({0}[]{4}) JNIEnv.GetArray ({2}, JniHandleOwnership.DoNotTransfer, typeof ({3}));", opt.GetOutputName (ElementType), opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetOutputName (sym.FullName), opt.NullableOperator) };
+			return new string[] { String.Format ("var {1} = ({0}[]{4}) global::Java.Lang.Object.GetArray<{3}> ({2}, JniHandleOwnership.DoNotTransfer);", opt.GetOutputName (ElementType), opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetOutputName (sym.FullName), opt.NullableOperator) };
 		}
 
 		public string[] PreCall (CodeGenerationOptions opt, string var_name)
 		{
-			return new string[] { String.Format ("IntPtr {0} = JNIEnv.NewArray ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
+			return new string[] { String.Format ("var {0} = global::Java.Lang.Object.NewArray ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
 		}
 
 		public bool NeedsPrep { get { return true; } }

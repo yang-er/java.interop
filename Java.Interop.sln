@@ -79,13 +79,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Java.Interop.Tools.JavaCall
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Java.Interop.GenericMarshaler", "src\Java.Interop.GenericMarshaler\Java.Interop.GenericMarshaler.csproj", "{D1243BAB-23CA-4566-A2A3-3ADA2C2DC3AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Java.Interop.BootstrapTasks", "build-tools\Java.Interop.BootstrapTasks\Java.Interop.BootstrapTasks.csproj", "{3E8E5C8C-59A6-4A9A-B55D-46AB14431B2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Java.Interop.BootstrapTasks", "build-tools\Java.Interop.BootstrapTasks\Java.Interop.BootstrapTasks.csproj", "{3E8E5C8C-59A6-4A9A-B55D-46AB14431B2A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Android.Tools.AndroidSdk", "external\xamarin-android-tools\src\Xamarin.Android.Tools.AndroidSdk\Xamarin.Android.Tools.AndroidSdk.csproj", "{E34BCFA0-CAA4-412C-AA1C-75DB8D67D157}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Java.Interop.Tools.JavaSource-Tests", "tests\Java.Interop.Tools.JavaSource-Tests\Java.Interop.Tools.JavaSource-Tests.csproj", "{093B5E94-7FB7-499F-9C11-30944BAFEE25}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "param-name-importer", "tools\param-name-importer\param-name-importer.csproj", "{0E3AF6C1-7638-464D-9174-485D494499DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Java.Runtime", "samples\Java.Runtime\Java.Runtime.csproj", "{CDF8367A-DDD2-4A37-99DA-B55951F13D1C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -239,6 +241,10 @@ Global
 		{0E3AF6C1-7638-464D-9174-485D494499DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E3AF6C1-7638-464D-9174-485D494499DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E3AF6C1-7638-464D-9174-485D494499DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF8367A-DDD2-4A37-99DA-B55951F13D1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF8367A-DDD2-4A37-99DA-B55951F13D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF8367A-DDD2-4A37-99DA-B55951F13D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF8367A-DDD2-4A37-99DA-B55951F13D1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -280,6 +286,7 @@ Global
 		{E34BCFA0-CAA4-412C-AA1C-75DB8D67D157} = {172B608B-E6F3-41CC-9949-203A76BA247C}
 		{093B5E94-7FB7-499F-9C11-30944BAFEE25} = {271C9F30-F679-4793-942B-0D9527CB3E2F}
 		{0E3AF6C1-7638-464D-9174-485D494499DC} = {C8F58966-94BF-407F-914A-8654F8B8AE3B}
+		{CDF8367A-DDD2-4A37-99DA-B55951F13D1C} = {D5A93398-AEB1-49F3-89DC-3904A47DB0C7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {29204E0C-382A-49A0-A814-AD7FBF9774A5}

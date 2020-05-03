@@ -58,12 +58,12 @@ namespace MonoDroid.Generation {
 
 		public string FromNative (CodeGenerationOptions opt, string var_name, bool owned)
 		{
-			return String.Format ("JNIEnv.GetString ({0}, {1})", var_name, owned ? "JniHandleOwnership.TransferLocalRef" : "JniHandleOwnership.DoNotTransfer");
+			return String.Format ("JniEnvironment.Strings.ToString (ref {0}, {1})", var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None");
 		}
 
 		public string ToNative (CodeGenerationOptions opt, string var_name, Dictionary<string, string> mappings = null)
 		{
-			return String.Format ("JniEnvironment.Strings.NewString ({0})", var_name);
+			return String.Format ("JniEnvironment.Strings.NewString ({0}).Handle", var_name);
 		}
 
 		public bool Validate (CodeGenerationOptions opt, GenericParameterDefinitionList type_params, CodeGeneratorContext context)

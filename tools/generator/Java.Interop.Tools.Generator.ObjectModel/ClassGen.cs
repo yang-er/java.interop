@@ -123,7 +123,7 @@ namespace MonoDroid.Generation
 		}
 
 		public override string FromNative (CodeGenerationOptions opt, string varname, bool owned) =>
-			$"global::Java.Lang.Object.GetObject<{opt.GetOutputName (FullName)}> ({varname}, {(owned ? "JniHandleOwnership.TransferLocalRef" : "JniHandleOwnership.DoNotTransfer")})";
+			$"global::Java.Lang.Object.GetObject<{opt.GetOutputName (FullName)}> (ref {varname}, {(owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None")})";
 
 		public bool FromXml { get; set; }
 
@@ -323,7 +323,7 @@ namespace MonoDroid.Generation
 		}
 
 		public override string ToNative (CodeGenerationOptions opt, string varname, Dictionary<string, string> mappings = null) =>
-			$"JNIEnv.ToLocalJniHandle ({varname})";
+			$"{varname}.PeerReference.NewLocalRef().Handle";
 
 		public override void UpdateEnumsInInterfaceImplementation ()
 		{

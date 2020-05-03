@@ -115,7 +115,7 @@ namespace MonoDroid.Generation {
 		public string[] PreCall (CodeGenerationOptions opt, string var_name)
 		{
 			return new string[] {
-				string.Format ("IntPtr {0} = JNIEnv.ToLocalJniHandle ({1});",
+				string.Format ("var {0} = {1};",
 						opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)),
 			};
 		}
@@ -127,10 +127,7 @@ namespace MonoDroid.Generation {
 
 		public string[] PostCall (CodeGenerationOptions opt, string var_name)
 		{
-			return new string[]{
-				string.Format ("JNIEnv.DeleteLocalRef ({0});",
-						opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name))),
-			};
+			return new string[] {};
 		}
 
 		public bool NeedsPrep { get { return true; } }

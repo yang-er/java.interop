@@ -202,7 +202,7 @@ namespace MonoDroid.Generation
 		public void WriteClassConstructors (ClassGen @class, string indent)
 		{
 			if (@class.FullName != "Java.Lang.Object" && @class.InheritsObject) {
-				writer.WriteLine ("{0}{1} {2} (IntPtr javaReference, JniHandleOwnership transfer) : base (javaReference, transfer) {{}}", indent, @class.IsFinal ? "internal" : "protected", @class.Name);
+				writer.WriteLine ("{0}{1} {2} (ref JniObjectReference reference, JniObjectReferenceOptions options) : base (ref reference, options) {{}}", indent, @class.IsFinal ? "internal" : "protected", @class.Name);
 				writer.WriteLine ();
 			}
 
@@ -371,7 +371,7 @@ namespace MonoDroid.Generation
 				writer.WriteLine ("{0}{1}", indent, constructor.Annotation);
 
 			writer.WriteLine ("{0}{1} unsafe {2} ({3})", indent, constructor.Visibility, constructor.Name, constructor.GetSignature (opt));
-			writer.WriteLine ("{0}\t: {1} (IntPtr.Zero, JniHandleOwnership.DoNotTransfer)", indent, useBase ? "base" : "this");
+			writer.WriteLine ("{0}\t: base (ref *InvalidJniObjectReference, JniObjectReferenceOptions.None)", indent, useBase ? "base" : "this");
 			writer.WriteLine ("{0}{{", indent);
 			WriteConstructorBody (constructor, indent + "\t", call_cleanup);
 			writer.WriteLine ("{0}}}", indent);
@@ -379,7 +379,7 @@ namespace MonoDroid.Generation
 			if (gen_string_overload) {
 				writer.WriteLine ("{0}[Register (\"{1}\", \"{2}\", \"{3}\"{4})]", indent, ".ctor", jni_sig, String.Empty, constructor.AdditionalAttributeString ());
 				writer.WriteLine ("{0}{1} unsafe {2} ({3})", indent, constructor.Visibility, constructor.Name, constructor.GetSignature (opt).Replace ("Java.Lang.ICharSequence", "string").Replace ("global::string", "string"));
-				writer.WriteLine ("{0}\t: {1} (IntPtr.Zero, JniHandleOwnership.DoNotTransfer)", indent, useBase ? "base" : "this");
+				writer.WriteLine ("{0}\t: {1} (ref *InvalidJniObjectReference, JniObjectReferenceOptions.None)", indent, useBase ? "base" : "this");
 				writer.WriteLine ("{0}{{", indent);
 				WriteConstructorBody (constructor, indent + "\t", call_cleanup);
 				writer.WriteLine ("{0}}}", indent);
@@ -832,34 +832,34 @@ namespace MonoDroid.Generation
 			writer.WriteLine ("{0}internal partial class {1}Invoker : global::Java.Lang.Object, {1} {{", indent, @interface.Name);
 			writer.WriteLine ();
 			WriteInterfaceInvokerHandle (@interface, indent + "\t", @interface.Name + "Invoker");
-			writer.WriteLine ("{0}\t{1}IntPtr class_ref;", indent, opt.BuildingCoreAssembly ? "new " : "");
+			writer.WriteLine ("{0}\t{1}JniObjectReference class_ref;", indent, opt.BuildingCoreAssembly ? "new " : "");
 			writer.WriteLine ();
-			writer.WriteLine ("{0}\tpublic static {1}{2} GetObject (IntPtr handle, JniHandleOwnership transfer)", indent, @interface.Name, opt.NullableOperator);
+			writer.WriteLine ("{0}\tpublic static {1}{2} GetObject (ref JniObjectReference handle, JniObjectReferenceOptions options)", indent, @interface.Name, opt.NullableOperator);
 			writer.WriteLine ("{0}\t{{", indent);
-			writer.WriteLine ("{0}\t\treturn global::Java.Lang.Object.GetObject<{1}> (handle, transfer);", indent, @interface.Name);
+			writer.WriteLine ("{0}\t\treturn global::Java.Lang.Object.GetObject<{1}> (ref handle, options);", indent, @interface.Name);
 			writer.WriteLine ("{0}\t}}", indent);
 			writer.WriteLine ();
-			writer.WriteLine ("{0}\tstatic IntPtr Validate (IntPtr handle)", indent);
+			writer.WriteLine ("{0}\tstatic ref JniObjectReference Validate (ref JniObjectReference handle)", indent);
 			writer.WriteLine ("{0}\t{{", indent);
-			writer.WriteLine ("{0}\t\tif (!JNIEnv.IsInstanceOf (handle, java_class_ref))", indent);
+			writer.WriteLine ("{0}\t\tif (!JniEnvironment.Types.IsInstanceOf(handle, java_class_ref))", indent);
 			writer.WriteLine ("{0}\t\t\tthrow new InvalidCastException (string.Format (\"Unable to convert instance of type '{{0}}' to type '{{1}}'.\",", indent);
-			writer.WriteLine ("{0}\t\t\t\t\t\tJNIEnv.GetClassNameFromInstance (handle), \"{1}\"));", indent, @interface.JavaName);
-			writer.WriteLine ("{0}\t\treturn handle;", indent);
+			writer.WriteLine ("{0}\t\t\t\t\t\tJniEnvironment.Types.GetJniTypeNameFromInstance (handle), \"{1}\"));", indent, @interface.JavaName);
+			writer.WriteLine ("{0}\t\treturn ref handle;", indent);
 			writer.WriteLine ("{0}\t}}", indent);
 			writer.WriteLine ();
 			writer.WriteLine ("{0}\tprotected override void Dispose (bool disposing)", indent);
 			writer.WriteLine ("{0}\t{{", indent);
-			writer.WriteLine ("{0}\t\tif (this.class_ref != IntPtr.Zero)", indent);
-			writer.WriteLine ("{0}\t\t\tJNIEnv.DeleteGlobalRef (this.class_ref);", indent);
-			writer.WriteLine ("{0}\t\tthis.class_ref = IntPtr.Zero;", indent);
+			writer.WriteLine ("{0}\t\tif (class_ref.IsValid)", indent);
+			writer.WriteLine ("{0}\t\t\tJniObjectReference.Dispose(ref class_ref);", indent);
+			writer.WriteLine ("{0}\t\tclass_ref = new JniObjectReference();", indent);
 			writer.WriteLine ("{0}\t\tbase.Dispose (disposing);", indent);
 			writer.WriteLine ("{0}\t}}", indent);
 			writer.WriteLine ();
-			writer.WriteLine ("{0}\tpublic {1}Invoker (IntPtr handle, JniHandleOwnership transfer) : base (Validate (handle), transfer)", indent, @interface.Name);
+			writer.WriteLine ("{0}\tpublic {1}Invoker (ref JniObjectReference handle, JniObjectReferenceOptions options) : base (ref Validate (ref handle), options)", indent, @interface.Name);
 			writer.WriteLine ("{0}\t{{", indent);
-			writer.WriteLine ("{0}\t\tIntPtr local_ref = JNIEnv.GetObjectClass ({1});", indent, Context.ContextType.GetObjectHandleProperty ("this"));
-			writer.WriteLine ("{0}\t\tthis.class_ref = JNIEnv.NewGlobalRef (local_ref);", indent);
-			writer.WriteLine ("{0}\t\tJNIEnv.DeleteLocalRef (local_ref);", indent);
+			writer.WriteLine ("{0}\t\tvar local_ref = JniEnvironment.Types.GetObjectClass(PeerReference);", indent);
+			writer.WriteLine ("{0}\t\tclass_ref = local_ref.NewGlobalRef();", indent);
+			writer.WriteLine ("{0}\t\tJniObjectReference.Dispose(ref local_ref);", indent);
 			writer.WriteLine ("{0}\t}}", indent);
 			writer.WriteLine ();
 
@@ -1268,26 +1268,79 @@ namespace MonoDroid.Generation
 			writer.WriteLine ();
 		}
 
+		protected static string GetInvokeType(string type)
+		{
+			switch (type)
+			{
+				case "Bool": return "Boolean";
+				case "Byte": return "SByte";
+				case "Int": return "Int32";
+				case "Short": return "Int16";
+				case "Long": return "Int64";
+				case "Float": return "Single";
+				case "UInt": return "Int32";
+				case "UShort": return "Int16";
+				case "ULong": return "Int64";
+				case "UByte": return "SByte";
+				default: return type;
+			}
+		}
+
 		public void WriteMethodInvokerBody (Method method, string indent)
 		{
-			writer.WriteLine ("{0}if ({1} == IntPtr.Zero)", indent, method.EscapedIdName);
-			writer.WriteLine ("{0}\t{1} = JNIEnv.GetMethodID (class_ref, \"{2}\", \"{3}\");", indent, method.EscapedIdName, method.JavaName, method.JniSignature);
-			foreach (string prep in method.Parameters.GetCallPrep (opt))
-				writer.WriteLine ("{0}{1}", indent, prep);
-			WriteParameterListCallArgs (method.Parameters, indent, invoker: true);
-			string env_method = "Call" + method.RetVal.CallMethodPrefix + "Method";
-			string call = method.RetVal.ReturnCast + "JNIEnv." + env_method + " (" +
-			    Context.ContextType.GetObjectHandleProperty ("this") + ", " + method.EscapedIdName + method.Parameters.GetCallArgs (opt, invoker: true) + ")";
-			if (method.IsVoid)
-				writer.WriteLine ("{0}{1};", indent, call);
+			writer.WriteLine("{0}const string __id = \"{1}.{2}\";", indent, method.JavaName, method.JniSignature);
+			foreach (string prep in method.Parameters.GetCallPrep(opt))
+				writer.WriteLine("{0}{1}", indent, prep);
+			writer.WriteLine("{0}try {{", indent);
+
+			var oldindent = indent;
+			indent += "\t";
+			WriteParameterListCallArgs(method.Parameters, indent, invoker: false);
+
+			var invokeType = GetInvokeType(method.RetVal.CallMethodPrefix);
+
+			writer.Write(indent);
+			if (!method.IsVoid)
+			{
+				writer.Write("var __rm = ");
+			}
+
+			if (method.IsStatic)
+			{
+				writer.WriteLine("_members.StaticMethods.Invoke{0}Method (__id{1});",
+						invokeType,
+						method.Parameters.GetCallArgs(opt, invoker: false));
+			}
+			else if (method.IsFinal)
+			{
+				writer.WriteLine("_members.InstanceMethods.InvokeNonvirtual{0}Method (__id, this{1});",
+						invokeType,
+						method.Parameters.GetCallArgs(opt, invoker: false));
+			}
+			else if ((method.IsVirtual && !method.IsAbstract) || method.IsInterfaceDefaultMethod)
+			{
+				writer.WriteLine("_members.InstanceMethods.InvokeVirtual{0}Method (__id, this{1});",
+						invokeType,
+						method.Parameters.GetCallArgs(opt, invoker: false));
+			}
 			else
-				writer.WriteLine ("{0}{1}{2};", indent, method.Parameters.HasCleanup ? "var __ret = " : "return ", method.RetVal.FromNative (opt, call, true) + opt.GetNullForgiveness (method.RetVal));
+			{
+				writer.WriteLine("_members.InstanceMethods.InvokeAbstract{0}Method (__id, this{1});",
+						invokeType,
+						method.Parameters.GetCallArgs(opt, invoker: false));
+			}
 
-			foreach (string cleanup in method.Parameters.GetCallCleanup (opt))
-				writer.WriteLine ("{0}{1}", indent, cleanup);
+			if (!method.IsVoid)
+			{
+				var r = invokeType == "Object" ? "__rm" : "__rm";
+				writer.WriteLine("{0}return {2}{1};", indent, method.RetVal.FromNative(opt, r, true) + opt.GetNullForgiveness(method.RetVal), method.RetVal.ReturnCast);
+			}
 
-			if (!method.IsVoid && method.Parameters.HasCleanup)
-				writer.WriteLine ("{0}return __ret;", indent);
+			indent = oldindent;
+			writer.WriteLine("{0}}} finally {{", indent);
+			foreach (string cleanup in method.Parameters.GetCallCleanup(opt))
+				writer.WriteLine("{0}\t{1}", indent, cleanup);
+			writer.WriteLine("{0}}}", indent);
 		}
 
 		void WriteMethodStringOverloadBody (Method method, string indent, bool haveSelf)
@@ -1475,13 +1528,7 @@ namespace MonoDroid.Generation
 		{
 			if (parameters.Count == 0)
 				return;
-			string JValue = "JValue";
-			switch (opt.CodeGenerationTarget) {
-				case CodeGenerationTarget.XAJavaInterop1:
-				case CodeGenerationTarget.JavaInterop1:
-					JValue = invoker ? JValue : "JniArgumentValue";
-					break;
-			}
+			string JValue = "JniArgumentValue";
 			writer.WriteLine ("{0}{1}* __args = stackalloc {1} [{2}];", indent, JValue, parameters.Count);
 			for (int i = 0; i < parameters.Count; ++i) {
 				var p = parameters [i];

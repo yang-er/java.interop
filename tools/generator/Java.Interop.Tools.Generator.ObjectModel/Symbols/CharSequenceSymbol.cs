@@ -55,12 +55,12 @@ namespace MonoDroid.Generation {
 
 		public string FromNative (CodeGenerationOptions opt, string var_name, bool owned)
 		{
-			return String.Format ("global::Java.Lang.Object.GetObject<Java.Lang.ICharSequence> ({0}, {1})", var_name, owned ? "JniHandleOwnership.TransferLocalRef" : "JniHandleOwnership.DoNotTransfer");
+			return String.Format ("global::Java.Lang.Object.GetObject<Java.Lang.ICharSequenceInvoker> (ref {0}, {1})", var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None");
 		}
 
 		public string ToNative (CodeGenerationOptions opt, string var_name, Dictionary<string, string> mappings = null)
 		{
-			return String.Format ("CharSequence.ToLocalJniHandle ({0})", var_name);
+			return String.Format ("ICharSequenceInvoker.ToLocalJniHandle ({0})", var_name);
 		}
 
 		public bool Validate (CodeGenerationOptions opt, GenericParameterDefinitionList type_params, CodeGeneratorContext context)
@@ -92,7 +92,7 @@ namespace MonoDroid.Generation {
 
 		public string[] PreCall (CodeGenerationOptions opt, string var_name)
 		{
-			return new string[] { String.Format ("IntPtr {0} = CharSequence.ToLocalJniHandle ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
+			return new string[] { String.Format ("IntPtr {0} = ICharSequenceInvoker.ToLocalJniHandle ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
 		}
 
 		public bool NeedsPrep { get { return true; } }

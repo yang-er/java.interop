@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "generator": {
+      "commandName": "Project",
+      "commandLineArgs": "-o ../../samples/Java.Runtime/Java.Runtime ../../api-Java.Runtime.xml"
+    }
+  }
+}
