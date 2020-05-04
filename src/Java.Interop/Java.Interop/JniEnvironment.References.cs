@@ -33,6 +33,11 @@ namespace Java.Interop
 				}
 			}
 
+			public static void WaitForBridgeProcessing()
+			{
+				JniRuntime.CurrentRuntime.ValueManager.WaitForGCBridgeProcessing();
+			}
+
 			public static void EnsureLocalCapacity (int capacity)
 			{
 				int r   = _EnsureLocalCapacity (capacity);

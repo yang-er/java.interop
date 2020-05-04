@@ -163,29 +163,10 @@ namespace Java.Lang
         internal static IJavaPeerable GetObject(
             ref JniObjectReference jobj,
             JniObjectReferenceOptions options,
-            Type type = null)
+            Type targetType = null)
         {
             if (!jobj.IsValid) return null;
-
-            lock (instances)
-            {
-                if (instances.TryGetValue(jobj.Handle, out var weakReferenceList))
-                {
-                    for (int index = 0; index < weakReferenceList.Count; ++index)
-                    {
-                        if (weakReferenceList[index].Target is IJavaPeerable target
-                            && target.PeerReference.IsValid
-                            && JniEnvironment.Types.IsSameObject(jobj, target.PeerReference)
-                            && (type == null ? 1 : (type.IsAssignableFrom(target.GetType()) ? 1 : 0)) != 0)
-                        {
-                            JniObjectReference.Dispose(ref jobj, options);
-                            return target;
-                        }
-                    }
-                }
-            }
-
-            return Java.Interop.TypeManager.CreateInstance(ref jobj, options, type);
+            return JniRuntime.CurrentRuntime.ValueManager.GetValue<IJavaPeerable>(ref jobj, options, targetType);
         }
     }
 

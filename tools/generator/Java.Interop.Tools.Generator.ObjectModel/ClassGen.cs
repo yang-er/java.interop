@@ -184,6 +184,7 @@ namespace MonoDroid.Generation
 				sw.WriteLine ();
 				sw.WriteLine ("\tpartial class __TypeRegistrations {");
 				sw.WriteLine ();
+				sw.WriteLine ("\t\t/*");
 				sw.WriteLine ("\t\tpublic static void RegisterPackages ()");
 				sw.WriteLine ("\t\t{");
 				sw.WriteLine ("#if MONODROID_TIMING");
@@ -232,6 +233,7 @@ namespace MonoDroid.Generation
 					sw.WriteLine ("\t\t\treturn Lookup (package_{0}_mappings, klass);", package);
 					sw.WriteLine ("\t\t}");
 				}
+				sw.WriteLine("\t*/");
 				sw.WriteLine ("\t}");
 				sw.WriteLine ("}");
 			}
