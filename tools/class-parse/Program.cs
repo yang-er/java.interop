@@ -20,6 +20,7 @@ namespace Xamarin.Android.Tools {
 			bool docsType   = false;
 			int  verbosity  = 0;
 			bool autorename = false;
+			bool no_streams = false;
 			var  outputFile = (string) null;
 			string platform = null;
 			var  docsPaths  = new List<string> ();
@@ -50,6 +51,9 @@ namespace Xamarin.Android.Tools {
 				{ "autorename",
 				  "Renames parameter names in the interfaces by derived classes.",
 				  v => autorename = v != null },
+				{ "ignore-stream-api",
+				  "Ignore all apis from stream api.",
+				  v => no_streams = v != null },
 				{ "platform=",
 				  "(Internal use only) specify Android framework platform ID",
 				  v => platform = v },
@@ -89,6 +93,25 @@ namespace Xamarin.Android.Tools {
 					Environment.ExitCode    = 1;
 				}
 			}
+
+			if (no_streams)
+			{
+				bool IsStreamApi(TypeInfo m)
+				{
+					return m.BinaryName.StartsWith("Ljava/util/stream/")
+						|| m.BinaryName.StartsWith("Ljava/util/function/");
+				}
+
+				foreach (var klass in classPath.GetPackages().Values.SelectMany(a => a))
+				{
+					var streamApis = klass.Methods.Where(m
+						=> IsStreamApi(m.ReturnType)
+						|| m.GetParameters().Any(a => IsStreamApi(a.Type))).ToList();
+					foreach (var item in streamApis)
+						klass.Methods.Remove(item);
+				}
+			}
+
 			if (!dump)
 				classPath.SaveXmlDescription (output);
 			if (outputFile != null)

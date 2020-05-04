@@ -208,17 +208,17 @@ namespace MonoDroid.Generation {
 			case "java.util.List":
 			case "java.util.ArrayList":
 			case "System.Collections.IList":
-				return CreateArray (new CollectionSymbol (key, "IList", "Android.Runtime.JavaList", type_params), arrayRank, has_ellipsis);
+				return CreateArray (new CollectionSymbol (key, "IJavaList", "JavaList", type_params), arrayRank, has_ellipsis);
 			case "java.util.Map":
 			case "java.util.HashMap":
 			case "java.util.SortedMap":
 			case "System.Collections.IDictionary":
-				return CreateArray (new CollectionSymbol (key, "IDictionary", "Android.Runtime.JavaDictionary", type_params), arrayRank, has_ellipsis);
+				return CreateArray (new CollectionSymbol (key, "IJavaDictionary", "JavaDictionary", type_params), arrayRank, has_ellipsis);
 			case "java.util.Set":
-				return CreateArray (new CollectionSymbol (key, "ICollection", "Android.Runtime.JavaSet", type_params), arrayRank, has_ellipsis);
+				return CreateArray (new CollectionSymbol (key, "IJavaCollection", "JavaSet", type_params), arrayRank, has_ellipsis);
 			case "java.util.Collection":
 			case "System.Collections.ICollection":
-				return CreateArray (new CollectionSymbol (key, "ICollection", "Android.Runtime.JavaCollection", type_params), arrayRank, has_ellipsis);
+				return CreateArray (new CollectionSymbol (key, "IJavaCollection", "JavaCollection", type_params), arrayRank, has_ellipsis);
 			default:
 				break;
 			}

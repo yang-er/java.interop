@@ -169,7 +169,7 @@ namespace MonoDroid.Generation {
 			else if (field.Symbol.NativeType != field.Symbol.FullName) {
 				writer.WriteLine ("{0}return {2}{1};",
 						indent,
-						field.Symbol.FromNative (opt, invokeType != "Object" ? "__v" : "__v.Handle", true) + opt.GetNullForgiveness (field),
+						field.Symbol.FromNative (opt, invokeType != "Object" ? "__v" : "__v", true) + opt.GetNullForgiveness (field),
 						field.Symbol.ReturnCast);
 			} else {
 				writer.WriteLine ("{0}return __v;", indent);

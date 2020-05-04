@@ -92,15 +92,15 @@ namespace MonoDroid.Generation {
 		public string FromNative (CodeGenerationOptions opt, string var_name, bool owned)
 		{
 			if (!string.IsNullOrEmpty (managed_type) && (sym is ClassGen || sym is InterfaceGen)) {
-				return string.Format ("global::Java.Lang.Object.GetObject<{0}> ({1}, {2})", 
-				                      opt.GetOutputName (managed_type), var_name, owned ? "JniHandleOwnership.TransferLocalRef" : "JniHandleOwnership.DoNotTransfer");
+				return string.Format ("global::Java.Lang.Object.GetObject<{0}> (ref {1}, {2})", 
+				                      opt.GetOutputName (managed_type), var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None");
  			}
 			return sym.FromNative (opt, var_name, owned);
 		}
 
 		public string ToNative (CodeGenerationOptions opt, string var_name)
 		{
-			return ((sym is GenericTypeParameter) || (sym is GenericSymbol)) ? String.Format ("JNIEnv.ToLocalJniHandle ({0})", var_name) : sym.ToNative (opt, var_name);
+			return ((sym is GenericTypeParameter) || (sym is GenericSymbol)) ? String.Format ("({0}).PeerReference.NewLocalRef().Handle", var_name) : sym.ToNative (opt, var_name);
 		}
 
 		public string GetGenericReturn (CodeGenerationOptions opt, string name, Dictionary<string, string> mappings)
@@ -111,7 +111,7 @@ namespace MonoDroid.Generation {
 			if (targetType == "string")
 				return string.Format ("{0}?.ToString ()", name);
 			var rgm = opt.SymbolTable.Lookup (targetType) as IRequireGenericMarshal;
-			return string.Format ("global::Java.Interop.JavaObjectExtensions.JavaCast<{0}>({1}){2}",
+			return string.Format ("global::Java.Interop.PeerableExtensions.JavaCast<{0}>({1}){2}",
 			                      rgm != null ? (rgm.GetGenericJavaObjectTypeOverride () ?? sym.FullName) : sym.FullName,
 			                      opt.GetSafeIdentifier (rgm != null ? rgm.ToInteroperableJavaObject (name) : name),
 			                      opt.NullForgivingOperator); 

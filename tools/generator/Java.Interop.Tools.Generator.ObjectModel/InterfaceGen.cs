@@ -42,7 +42,7 @@ namespace MonoDroid.Generation
 
 		public override string FromNative (CodeGenerationOptions opt, string varname, bool owned)
 		{
-			return string.Format ("global::Java.Lang.Object.GetObject<{0}> ({1}, {2})", opt.GetOutputName (FullName), varname, owned ? "JniHandleOwnership.TransferLocalRef" : "JniHandleOwnership.DoNotTransfer");
+			return string.Format ("global::Java.Lang.Object.GetObject<{0}> (ref {1}, {2})", opt.GetOutputName (FullName), varname, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None");
 			/*
 			if (String.IsNullOrEmpty (Marshaler))
 				return String.Format ("global::Java.Lang.Object.GetObject<{0}> ({1}, {2})", opt.GetOutputName (FullName), varname, owned ? "JniHandleOwnership.TransferLocalRef" : "JniHandleOwnership.DoNotTransfer");
@@ -224,7 +224,7 @@ namespace MonoDroid.Generation
 
 		public override string ToNative (CodeGenerationOptions opt, string varname, Dictionary<string, string> mappings = null)
 		{
-			return string.Format ("JNIEnv.ToLocalJniHandle ({0})", varname);
+			return string.Format ("({0}).PeerReference.NewLocalRef().Handle", varname);
 			/*
 			if (String.IsNullOrEmpty (Marshaler))
 				return String.Format ("JNIEnv.ToLocalJniHandle ({0})", varname);

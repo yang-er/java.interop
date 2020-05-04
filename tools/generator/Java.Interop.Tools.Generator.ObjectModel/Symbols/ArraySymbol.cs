@@ -78,12 +78,12 @@ namespace MonoDroid.Generation {
 
 		public string FromNative (CodeGenerationOptions opt, string var_name, bool owned)
 		{
-			return String.Format ("({0}[]{4}) global::Java.Lang.Object.GetArray<{3}> (ref {1}, {2})", opt.GetOutputName (ElementType), var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None", opt.GetOutputName (sym.FullName), opt.NullableOperator);
+			return String.Format ("({0}[]{4}) global::Java.Util.InteroperableArrays.GetArray<{3}> (ref {1}, {2})", opt.GetOutputName (ElementType), var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None", opt.GetOutputName (sym.FullName), opt.NullableOperator);
 		}
 
 		public string ToNative (CodeGenerationOptions opt, string var_name, Dictionary<string, string> mappings = null)
 		{
-			return String.Format ("global::Java.Lang.Object.NewArray ({0}).PeerReference.NewLocalRef().Handle", var_name);
+			return String.Format ("global::Java.Util.InteroperableArrays.NewArray ({0}).PeerReference.NewLocalRef().Handle", var_name);
 		}
 
 		public bool Validate (CodeGenerationOptions opt, GenericParameterDefinitionList type_params, CodeGeneratorContext context)
@@ -100,7 +100,7 @@ namespace MonoDroid.Generation {
 		{
 			string[] result = new string [2];
 			result [0] = String.Format ("if ({0} != null)", opt.GetSafeIdentifier (var_name));
-			result [1] = String.Format ("\tglobal::Java.Lang.Object.ArrayCopyNative({0}, {1});", opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)));
+			result [1] = String.Format ("\tglobal::Java.Util.InteroperableArrays.ArrayCopy({0}, {1});", opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)));
 			return result;
 		}
 
@@ -115,12 +115,12 @@ namespace MonoDroid.Generation {
 
 		public string[] PreCallback (CodeGenerationOptions opt, string var_name, bool owned)
 		{
-			return new string[] { String.Format ("var {1} = ({0}[]{4}) global::Java.Lang.Object.GetArray<{3}> ({2}, JniHandleOwnership.DoNotTransfer);", opt.GetOutputName (ElementType), opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetOutputName (sym.FullName), opt.NullableOperator) };
+			return new string[] { String.Format ("var {1} = ({0}[]{4}) global::Java.Util.InteroperableArrays.GetArray<{3}> ({2}, JniHandleOwnership.DoNotTransfer);", opt.GetOutputName (ElementType), opt.GetSafeIdentifier (var_name), opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetOutputName (sym.FullName), opt.NullableOperator) };
 		}
 
 		public string[] PreCall (CodeGenerationOptions opt, string var_name)
 		{
-			return new string[] { String.Format ("var {0} = global::Java.Lang.Object.NewArray ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
+			return new string[] { String.Format ("var {0} = global::Java.Util.InteroperableArrays.NewArray ({1});", opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)), opt.GetSafeIdentifier (var_name)) };
 		}
 
 		public bool NeedsPrep { get { return true; } }

@@ -709,7 +709,7 @@ namespace MonoDroid.Generation
 			var rgm = this as IRequireGenericMarshal;
 
 			return new string []{
-				string.Format ("{0} {1} = {5}global::Java.Lang.Object.GetObject<{4}> ({2}, {3});",
+				string.Format ("/*bb*/ {0} {1} = {5}global::Java.Lang.Object.GetObject<{4}> ({2}, {3});",
 					       "var",
 					       opt.GetSafeIdentifier (var_name),
 					       opt.GetSafeIdentifier (TypeNameUtilities.GetNativeName (var_name)),

@@ -223,7 +223,7 @@ namespace MonoDroid.Generation
 			writer.WriteLine ("{0}[global::Android.Runtime.Register (\"{1}\", DoNotGenerateAcw=true{2})]", indent, @class.RawJniName, @class.AdditionalAttributeString ());
 			writer.WriteLine ("{0}internal partial class {1}Invoker : {1}{2} {{", indent, @class.Name, sb.ToString ());
 			writer.WriteLine ();
-			writer.WriteLine ("{0}\tpublic {1}Invoker (IntPtr handle, JniHandleOwnership transfer) : base (handle, transfer) {{}}", indent, @class.Name);
+			writer.WriteLine ("{0}\tpublic {1}Invoker (ref JniObjectReference reference, JniObjectReferenceOptions options) : base (ref reference, options) {{}}", indent, @class.Name);
 			writer.WriteLine ();
 			WriteClassInvokerHandle (@class, indent + "\t", @class.Name + "Invoker");
 
