@@ -657,6 +657,12 @@ namespace MonoDroid.Generation
 			AdjustNestedTypeFullName (this);
 
 			foreach (string iface_name in implemented_interfaces) {
+				if (iface_name == "Java.Interop.IJavaPeerable") continue;
+				if (iface_name == "Java.Interop.IDisposable") continue;
+				if (iface_name == "Java.Util.IJavaList") continue;
+				if (iface_name == "Java.Util.IJavaDictionary") continue;
+				if (iface_name == "Java.Util.IJavaCollection") continue;
+				if (iface_name == "Java.Util.IJavaSet") continue;
 				ISymbol isym = opt.SymbolTable.Lookup (iface_name);
 				if (isym != null && isym.Validate (opt, TypeParameters, context))
 					Interfaces.Add (isym);

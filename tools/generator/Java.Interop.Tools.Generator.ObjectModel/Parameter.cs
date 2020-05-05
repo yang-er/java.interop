@@ -270,5 +270,10 @@ namespace MonoDroid.Generation {
 		}
 
 		public ISymbol Symbol => sym;
+
+		public override string ToString()
+		{
+			return $"parameter: {Type} {JavaName}";
+		}
 	}
 }

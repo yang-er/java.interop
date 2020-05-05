@@ -203,5 +203,10 @@ namespace MonoDroid.Generation
 
 			return base.OnValidate (opt, tpl, context);
 		}
+
+		public override string ToString()
+		{
+			return $"method: {ReturnType} {JavaName} ({Parameters})";
+		}
 	}
 }

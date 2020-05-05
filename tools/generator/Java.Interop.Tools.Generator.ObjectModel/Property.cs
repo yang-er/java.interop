@@ -58,5 +58,10 @@ namespace MonoDroid.Generation
 				}
 			}
 		}
+
+		public override string ToString()
+		{
+			return $"property: {Type} {Name} (get{(Setter != null ? ",set" : "")})";
+		}
 	}
 }

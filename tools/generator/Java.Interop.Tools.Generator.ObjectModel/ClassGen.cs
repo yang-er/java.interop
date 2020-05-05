@@ -295,7 +295,7 @@ namespace MonoDroid.Generation
 			}
 
 			base_symbol = IsAnnotation ? opt.SymbolTable.Lookup ("java.lang.Object") : BaseType != null ? opt.SymbolTable.Lookup (BaseType) : null;
-			if (base_symbol == null && FullName != "Java.Lang.Object" && FullName != "System.Object") {
+			if (base_symbol == null && FullName != "Java.Lang.Object" && FullName != "Java.Lang.Throwable" && FullName != "Java.Interop.JavaObject" && FullName != "Java.Interop.JavaException" && FullName != "Java.Interop.JavaArray" && FullName != "System.Object") {
 				Report.Warning (0, Report.WarningClassGen + 2, "Class {0} has unknown base type {1}.", FullName, BaseType);
 				IsValid = false;
 				return false;
@@ -344,6 +344,11 @@ namespace MonoDroid.Generation
 				}
 			}
 			base.UpdateEnumsInInterfaceImplementation ();
+		}
+
+		public override string ToString()
+		{
+			return $"class: {JavaName}";
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.Xml;
 using System.IO;
 
 using Xamarin.Android.Binder;
+using System.Linq;
 
 namespace MonoDroid.Generation {
 
@@ -283,6 +284,11 @@ namespace MonoDroid.Generation {
 				if (!p.Validate (opt, type_params, context))
 					return false;
 			return true;
+		}
+
+		public override string ToString()
+		{
+			return string.Join(", ", items.Select(a => a.ToString()));
 		}
 	}
 }

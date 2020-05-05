@@ -249,5 +249,11 @@ namespace MonoDroid.Generation
 			return GetGenericJavaObjectTypeOverride () != null ? TypeNameUtilities.GetNativeName (var_name) : var_name;
 		}
 		#endregion
+
+
+		public override string ToString()
+		{
+			return $"interface: {JavaName}";
+		}
 	}
 }
