@@ -55,7 +55,7 @@ namespace MonoDroid.Generation {
 
 		public string FromNative (CodeGenerationOptions opt, string var_name, bool owned)
 		{
-			return String.Format ("global::Java.Lang.Object.GetObject<Java.Lang.ICharSequenceInvoker> (ref {0}, {1})", var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None");
+			return String.Format ("global::Java.Lang.Object.GetObject<Java.Lang.ICharSequence> (ref {0}, {1})", var_name, owned ? "JniObjectReferenceOptions.CopyAndDispose" : "JniObjectReferenceOptions.None");
 		}
 
 		public string ToNative (CodeGenerationOptions opt, string var_name, Dictionary<string, string> mappings = null)
