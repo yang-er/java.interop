@@ -1249,19 +1249,23 @@ namespace MonoDroid.Generation
 
 		public void WriteMethodIdField (Method method, string indent, bool invoker = false)
 		{
-			if (invoker) {
-				writer.WriteLine ("{0}IntPtr {1};", indent, method.EscapedIdName);
-				return;
-			}
 			WriteMethodIdField (method, indent);
 		}
 
 		public void WriteMethodInvoker (Method method, string indent, GenBase type)
 		{
-			WriteMethodCallback (method, indent, type, null, method.IsReturnCharSequence);
+			bool forceOverride = false;
+			if (method.JniSignature == "()Ljava/lang/String;" && method.JavaName == "toString")
+				forceOverride = true;
+			else if (method.JniSignature == "()I" && method.JavaName == "hashCode")
+				forceOverride = true;
+			else if (method.JniSignature == "(Ljava/lang/Object;)Z" && method.JavaName == "equals")
+				forceOverride = true;
+
+			WriteMethodCallback(method, indent, type, null, method.IsReturnCharSequence);
 			WriteMethodIdField (method, indent, invoker: true);
-			writer.WriteLine ("{0}public unsafe {1}{2} {3} ({4})",
-				      indent, method.IsStatic ? "static " : string.Empty, opt.GetTypeReferenceName (method.RetVal), method.AdjustedName, method.GetSignature (opt));
+			writer.WriteLine ("{0}public{5} unsafe {1}{2} {3} ({4})",
+				      indent, method.IsStatic ? "static " : string.Empty, opt.GetTypeReferenceName (method.RetVal), method.AdjustedName, method.GetSignature (opt), forceOverride ? " override" : "");
 			writer.WriteLine ("{0}{{", indent);
 			WriteMethodInvokerBody (method, indent + "\t");
 			writer.WriteLine ("{0}}}", indent);
@@ -1487,6 +1491,10 @@ namespace MonoDroid.Generation
 			if ((string.IsNullOrEmpty (virt_ov) || virt_ov == " virtual") && type.RequiresNew (method.AdjustedName, method)) {
 				virt_ov = " new" + virt_ov;
 			}
+
+			if ((string.IsNullOrEmpty(virt_ov) || virt_ov == " virtual") && method.JavaName == "clone" && method.Visibility != "protected" && method.JniSignature == "()Ljava/lang/Object;")
+				virt_ov = " new" + virt_ov;
+
 			string ret = opt.GetTypeReferenceName (method.RetVal);
 			WriteMethodIdField (method, indent);
 			if (method.DeclaringType.IsGeneratable)
