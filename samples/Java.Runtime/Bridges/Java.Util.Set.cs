@@ -3,6 +3,7 @@ using Java.Lang;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Java.Util
 {
@@ -28,6 +29,9 @@ namespace Java.Util
         IEnumerator IEnumerable.GetEnumerator() => Iterator().AsEnumerator();
     }
 
+    [JniTypeSignature ("java/util/Set", GenerateJavaPeer = false)]
+    [global::Android.Runtime.Register("java/util/Set", DoNotGenerateAcw = true)]
+    [JavaTypeParameters(new string[] { "T" })]
     internal partial class ISetInvoker<T> : ISetInvoker, ICollection<T>, IIterable<T>, IJavaSet<T> where T : Java.Lang.Object
     {
         public ISetInvoker(ref JniObjectReference reference, JniObjectReferenceOptions options) : base(ref reference, options) { }

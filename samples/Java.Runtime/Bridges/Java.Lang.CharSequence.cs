@@ -16,4 +16,11 @@ namespace Java.Lang
             return @ref.Handle;
         }
     }
+    
+    partial class String
+    {
+        public static explicit operator String(string value) => new String(value);
+
+        public static explicit operator string(String value) => value.ToString();
+    }
 }

@@ -51,6 +51,7 @@ namespace Java.Util
     }
 
     [Register("java/util/ArrayList", DoNotGenerateAcw = true)]
+    [JniTypeSignature ("java/util/ArrayList", GenerateJavaPeer = false)]
     [JavaTypeParameters(new string[] { "T" })]
     public partial class ArrayList<T> :
         Java.Util.ArrayList,
@@ -139,7 +140,8 @@ namespace Java.Util
         }
     }
 
-    [Register("java/util/ArrayList", DoNotGenerateAcw = true)]
+    [Register("java/util/List", DoNotGenerateAcw = true)]
+    [JniTypeSignature("java/util/List", GenerateJavaPeer = false)]
     [JavaTypeParameters(new string[] { "T" })]
     internal partial class IListInvoker<T> :
         Java.Util.IListInvoker,

@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Java.Interop\Java.Interop.csproj" />
     <ProjectReference Include="..\..\src\Java.Runtime.Environment\Java.Runtime.Environment.csproj" />
+    <ProjectReference Include="..\Java.Runtime\Java.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

@@ -71,7 +71,8 @@ namespace MonoDroid.Generation
 
 			if (@class.IsDeprecated)
 				writer.WriteLine ("{0}[ObsoleteAttribute (@\"{1}\")]", indent, @class.DeprecatedComment);
-			writer.WriteLine ("{0}[global::Android.Runtime.Register (\"{1}\", DoNotGenerateAcw=true{2})]", indent, @class.RawJniName, @class.AdditionalAttributeString ());
+			writer.WriteLine ("{0}[JniTypeSignature (\"{1}\", GenerateJavaPeer = false{2})]", indent, @class.RawJniName, @class.AdditionalAttributeString ());
+			writer.WriteLine ("{0}[global::Android.Runtime.Register (\"{1}\", DoNotGenerateAcw = true{2})]", indent, @class.RawJniName, @class.AdditionalAttributeString ());
 			if (@class.TypeParameters != null && @class.TypeParameters.Any ())
 				writer.WriteLine ("{0}{1}", indent, @class.TypeParameters.ToGeneratedAttributeString ());
 			string inherits = "";

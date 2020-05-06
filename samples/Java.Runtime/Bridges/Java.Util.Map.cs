@@ -65,6 +65,9 @@ namespace Java.Util
         }
     }
 
+    [JniTypeSignature ("java/util/HashMap", GenerateJavaPeer = false)]
+    [Register("java/util/HashMap", DoNotGenerateAcw = true)]
+    [JavaTypeParameters(new string[] { "K", "V" })]
     public partial class HashMap<K, V> : HashMap, IDictionary<K, V>, IJavaDictionary<K, V> where K : Java.Lang.Object where V : Java.Lang.Object
     {
         protected HashMap(ref JniObjectReference reference, JniObjectReferenceOptions options) : base(ref reference, options) { }
@@ -159,7 +162,7 @@ namespace Java.Util
             }
         }
     }
-
+    
     partial class IMapInvoker : IDictionary, IJavaDictionary
     {
         object IDictionary.this[object key] { get => Get((Java.Lang.Object)key); set => Put((Java.Lang.Object)key, (Java.Lang.Object)value); }
@@ -216,6 +219,9 @@ namespace Java.Util
         }
     }
 
+    [JniTypeSignature ("java/util/Map", GenerateJavaPeer = false)]
+    [Register("java/util/Map", DoNotGenerateAcw = true)]
+    [JavaTypeParameters(new string[] { "K", "V" })]
     partial class IMapInvoker<K, V> : IMapInvoker, IDictionary<K, V>, IJavaDictionary<K, V> where K : Java.Lang.Object where V : Java.Lang.Object
     {
         protected IMapInvoker(ref JniObjectReference reference, JniObjectReferenceOptions options) : base(ref reference, options) { }

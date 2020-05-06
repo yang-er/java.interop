@@ -72,6 +72,14 @@ namespace Java.Interop {
 
 	public class JreRuntime : JniRuntime
 	{
+		public static void Initialize(string path)
+		{
+			int r = NativeMethods.java_interop_jvm_load (path);
+			if (r != 0) {
+				throw new Exception ($"Could not load JVM path `{path}` ({r})!");
+			}
+		}
+
 		static int CreateJavaVM (out IntPtr javavm, out IntPtr jnienv, ref JavaVMInitArgs args)
 		{
 			return NativeMethods.java_interop_jvm_create (out javavm, out jnienv, ref args);

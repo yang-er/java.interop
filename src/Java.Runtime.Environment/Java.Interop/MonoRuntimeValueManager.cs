@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -66,25 +67,29 @@ namespace Java.Interop {
 
 		protected override void Dispose (bool disposing)
 		{
-			base.Dispose (disposing);
+			try
+			{
+				if (!disposing)
+					return;
 
-			if (!disposing)
-				return;
+				if (RegisteredInstances == null)
+					return;
 
-			if (RegisteredInstances == null)
-				return;
-
-			lock (RegisteredInstances) {
-				foreach (var o in RegisteredInstances.Values) {
-					foreach (var r in o) {
-						IJavaPeerable t;
-						if (!r.TryGetTarget (out t))
-							continue;
-						t.Dispose ();
-					}
+				lock (RegisteredInstances)
+				{
+					var refs = RegisteredInstances.Values
+						.SelectMany(e => e)
+						.ToList();
+					foreach (var r in refs)
+						if (r.TryGetTarget(out var t))
+							t.Dispose();
+					RegisteredInstances.Clear ();
+					RegisteredInstances = null;
 				}
-				RegisteredInstances.Clear ();
-				RegisteredInstances = null;
+			}
+			finally
+			{
+				base.Dispose (disposing);
 			}
 		}
 

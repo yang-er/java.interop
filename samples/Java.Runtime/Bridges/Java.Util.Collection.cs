@@ -26,6 +26,7 @@ namespace Java.Util
     }
 
     [Register("java/util/Collection", DoNotGenerateAcw = true)]
+    [JniTypeSignature("java/util/Collection", GenerateJavaPeer = false)]
     internal partial class ICollectionInvoker<T> : ICollectionInvoker, ICollection<T>, IJavaCollection<T> where T : Java.Lang.Object
     {
         public ICollectionInvoker(ref JniObjectReference reference, JniObjectReferenceOptions options) : base(ref reference, options) { }

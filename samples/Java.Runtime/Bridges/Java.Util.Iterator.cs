@@ -18,6 +18,7 @@ namespace Java
         }
 
 		[Register("java/lang/Iterable", DoNotGenerateAcw = true)]
+        [JniTypeSignature("java/lang/Iterable", GenerateJavaPeer = false)]
 		internal partial class IIterableInvoker<T> : IIterableInvoker, IIterable<T> where T : Java.Lang.Object
 		{
 			public IIterableInvoker(ref JniObjectReference handle, JniObjectReferenceOptions options) : base(ref handle, options) { }
@@ -44,6 +45,7 @@ namespace Java
             new E Next();
         }
 
+        [JniTypeSignature("java/util/Iterator", GenerateJavaPeer = false)]
 		[Register("java/util/Iterator", DoNotGenerateAcw = true)]
 		internal partial class IIteratorInvoker<E> : IIteratorInvoker, IIterator<E> where E : Java.Lang.Object
 		{

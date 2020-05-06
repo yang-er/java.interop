@@ -149,7 +149,8 @@ namespace Java.Interop
 				Debug.Assert (count == 0);
 				var available   = GetAvailableInvocationPointers ().FirstOrDefault ();
 				if (available == IntPtr.Zero)
-					throw new NotSupportedException ("No available Java runtime to attach to. Please create one.");
+					return null;
+					//throw new NotSupportedException ("No available Java runtime to attach to. Please create one.");
 				var options     = new CreationOptions () {
 					DestroyRuntimeOnDispose = false,
 					InvocationPointer       = available,
